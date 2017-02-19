@@ -2,7 +2,7 @@
   "name": "libx",
   "version": "0.0.1",
   "description": "Collection + Model library for MobX",
-  "main": "lib/libx.js",
+  "main": "lib/index.js",
   "engines": {
     "node": ">=4.0.0"
   },
