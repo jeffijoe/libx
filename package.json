@@ -21,12 +21,14 @@
     "url": "git+https://github.com/jeffijoe/libx.git"
   },
   "files": [
-    "./lib"
+    "lib",
+    "LICENSE.md",
+    "README.md"
   ],
   "directories": {
-    "lib": "./lib"
+    "lib": "lib"
   },
-  "keywords": [],
+  "keywords": ["mobx", "backbone", "tfrp", "state management", "react"],
   "author": "Jeff Hansen <jeff@jeffijoe.com>",
   "license": "MIT",
   "bugs": {
