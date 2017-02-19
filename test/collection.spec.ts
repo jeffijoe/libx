@@ -25,6 +25,12 @@ describe('collection', () => {
       const c = collection<Model>()
       expect(c.set()).to.equal(undefined)
     })
+
+    it('defaults to "id" for id attribute', () => {
+      const c = collection<Model>({ idAttribute: '' })
+      c.set({ id: 1 })
+      expect(c.get(1)).to.be.ok
+    })
   })
 
   describe('#add', () => {
