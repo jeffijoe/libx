@@ -1,6 +1,6 @@
 {
   "name": "libx",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Collection + Model library for MobX",
   "main": "lib/index.js",
   "engines": {
@@ -20,7 +20,9 @@
     "type": "git",
     "url": "git+https://github.com/jeffijoe/libx.git"
   },
-  "files": ["./lib"],
+  "files": [
+    "./lib"
+  ],
   "directories": {
     "lib": "./lib"
   },
