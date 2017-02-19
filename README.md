@@ -25,8 +25,6 @@ hard. But it doesn't have to be.
 **LibX** is inspired by Backbone's notion of Collections and Models, and makes it sexy by using MobX to manage state,
 instead of using events.
 
-LibX also lets you
-
 **TL;DR:** Maintaining only a single instance of a model is a chore. With LibX, it's not.
 
 # Examples
@@ -35,7 +33,7 @@ See the [TypeScript example][ts-example] and [Babel example][babel-example] for 
 
 # Documentation
 
-Coming sooner or later...
+Coming sooner or later - until then, feel free to inspect the examples and source code.
 
 # Author
 
