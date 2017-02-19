@@ -7,14 +7,14 @@
     "node": ">=4.0.0"
   },
   "scripts": {
-    "build": "tsc -p src",
+    "build": "rimraf lib && tsc -p src",
     "test": "rimraf .test-out && tsc --skipLibCheck -p test && mocha .test-out/test/**/*.spec.js --require .test-out/test/index.js",
     "test:watch": "nodemon -e js,ts --exec npm run test",
     "lint": "tslint lib/ test/",
     "lint:watch": "nodemon --exec npm run lint",
     "cover": "nyc npm test",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "do-publish": "npm run lint && npm run cover && npm publish"
+    "do-publish": "npm run build && npm run lint && npm run cover && npm publish"
   },
   "repository": {
     "type": "git",
