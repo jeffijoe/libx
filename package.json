@@ -1,6 +1,6 @@
 {
   "name": "libx",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Collection + Model library for MobX",
   "main": "lib/index.js",
   "engines": {
@@ -28,7 +28,13 @@
   "directories": {
     "lib": "lib"
   },
-  "keywords": ["mobx", "backbone", "tfrp", "state management", "react"],
+  "keywords": [
+    "mobx",
+    "backbone",
+    "tfrp",
+    "state management",
+    "react"
+  ],
   "author": "Jeff Hansen <jeff@jeffijoe.com>",
   "license": "MIT",
   "bugs": {
