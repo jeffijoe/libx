@@ -5,7 +5,7 @@ const find = require('lodash/find')
 const some = require('lodash/some')
 
 /**
- * Used in various Lodash functions suchs as `map`, `filter`..
+ * Used in various Lodash functions such as `map`, `filter`..
  */
 export interface IIteratee<T, M> {
   (input: T, index: number): M
