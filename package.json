@@ -1,6 +1,6 @@
 {
   "name": "libx",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Collection + Model library for MobX",
   "main": "lib/index.js",
   "engines": {
