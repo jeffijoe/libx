@@ -1,0 +1,14 @@
+{
+  "sourceMap": true,
+  "instrument": true,
+  "extension": [
+    ".ts"
+  ],
+  "reporter": [
+    "text",
+    "lcov"
+  ],
+  "include": [
+    ".test-out/src/**/*.js"
+  ]
+}

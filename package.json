@@ -1,0 +1,54 @@
+{
+  "name": "libx",
+  "version": "0.0.1",
+  "description": "Collection + Model library for MobX",
+  "main": "lib/libx.js",
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p src",
+    "test": "rimraf .test-out && tsc --skipLibCheck -p test && mocha .test-out/test/**/*.spec.js --require .test-out/test/index.js",
+    "test:watch": "nodemon -e js,ts --exec npm run test",
+    "lint": "tslint lib/ test/",
+    "lint:watch": "nodemon --exec npm run lint",
+    "cover": "nyc npm test",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "do-publish": "npm run lint && npm run cover && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeffijoe/libx.git"
+  },
+  "files": ["./lib"],
+  "directories": {
+    "lib": "./lib"
+  },
+  "keywords": [],
+  "author": "Jeff Hansen <jeff@jeffijoe.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jeffijoe/libx/issues"
+  },
+  "homepage": "https://github.com/jeffijoe/libx#readme",
+  "devDependencies": {
+    "@types/chai": "^3.4.35",
+    "@types/mocha": "^2.2.39",
+    "@types/node": "^7.0.5",
+    "@types/sinon-chai": "^2.7.27",
+    "chai": "^3.5.0",
+    "coveralls": "^2.11.16",
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "nyc": "^10.1.2",
+    "rimraf": "^2.6.0",
+    "sinon": "^1.17.7",
+    "sinon-chai": "^2.8.0",
+    "tslint": "^4.4.2",
+    "typescript": "^2.1.6"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "mobx": "^3.1.0"
+  }
+}

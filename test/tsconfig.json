@@ -1,0 +1,26 @@
+{
+  "include": [
+    "./**/*.ts",
+    "../src/client/**/*.ts"
+  ],
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "../.test-out",
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "target": "es6",
+    "module": "commonjs",
+    "jsx": "react",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "../src/client",
+    "lib": [
+      "es5",
+      "es6",
+      "es7",
+      "dom"
+    ]
+  }
+}
