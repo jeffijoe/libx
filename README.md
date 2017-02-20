@@ -307,7 +307,7 @@ That's it for the `TodosScreenStore` - our UI state.
 
 Now for the React part.
 
-```jsx harmony
+```jsx
 import React from 'react'
 import { render } from 'react-dom'
 import { observer } from 'mobx-react'
