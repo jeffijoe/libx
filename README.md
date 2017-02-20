@@ -282,6 +282,10 @@ class TodosScreenStore extends Store {
     this.loading = loading
   }
   
+  @action setFilter (filter) {
+    this.filter = filter
+  }
+  
   // Called by the UI whenever it wants to activate
   // this state from scratch.
   activate () {
@@ -349,6 +353,11 @@ class TodosApp extends React.Component {
             </li>
           )}
         </ul>
+        <select value={this.store.filter} onChange={e => this.store.setFilter(e.target.value)}>
+          <option value="ALL">All</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="INCOMPLETE">Incomplete</option>
+        </select>
       </div>
     )
   }
@@ -364,9 +373,11 @@ render(
 And that concludes our guide. All that's left is to slap some Stripe integration on it
 and make millions. You're welcome.
 
-# API
+# API documentation
 
 Coming sooner or later - until then, feel free to inspect the examples and source code.
+
+The source is pretty documented, so I strongly suggest you check it out.
 
 # Author
 
