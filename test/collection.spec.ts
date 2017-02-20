@@ -33,6 +33,22 @@ describe('collection', () => {
     })
   })
 
+  describe('#create', () => {
+    it('acts like #set if an id is present', () => {
+      const c = collection<{ id: number }>()
+      const o1 = c.set({ id: 1})
+      const o2 = c.create({ id: 1})
+      expect(o1).to.equal(o2)
+    })
+
+    it('adds the model even if it does not have an id', () => {
+      const c = collection<{ id: number, hello?: string }>()
+      const o1 = c.set({id: 1})
+      const o2 = c.create({ hello: 'world' })
+      expect(o2.hello).to.equal('world')
+    })
+  })
+
   describe('#add', () => {
     it('adds a single or multiple models', () => {
       const c = collection<{ id: number}>()

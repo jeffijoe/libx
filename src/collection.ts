@@ -28,6 +28,17 @@ export interface ICollection<T> {
    */
   add (models: T | T[]): this
   /**
+   * Like `set`, but will add regardless of whether an id is present or not.
+   * This has the added risk of resulting multiple model instances if you don't make sure
+   * to update the existing model once you do have an id. The model id is what makes the whole
+   * one-instance-per-entity work.
+   */
+  create (data: IObjectLike, createOpts?: ICollectionOptions<T>): T
+  /**
+   * Multi-version of `create`.
+   */
+  create (data: IObjectLike[], createOpts?: ICollectionOptions<T>): T[]
+  /**
    * Gets items by ids.
    */
   get (id: any[]): Array<T | undefined>
@@ -161,6 +172,7 @@ export function collection<T> (
     add: action(add),
     get,
     set: action(set),
+    create: action(create),
     remove: action(remove),
     clear: action(clear),
     filter: bindLodashFunc(items, filter),
@@ -190,6 +202,7 @@ export function collection<T> (
   function set (data?: IObjectLike, setOpts?: ICollectionOptions<T>): T | undefined
   function set (data?: IObjectLike[], setOpts?: ICollectionOptions<T>): T[] | undefined
   function set (data?: IObjectLike | IObjectLike[], setOpts?: ICollectionOptions<T>): T | T[] | undefined {
+    setOpts = Object.assign({}, opts as any, setOpts)
     if (!data) {
       return undefined
     }
@@ -198,7 +211,7 @@ export function collection<T> (
       return data.map((d) => set(d, setOpts) as T) as T[]
     }
 
-    let dataId = opts!.getDataId!(data, Object.assign({}, opts as any, setOpts))
+    let dataId = opts!.getDataId!(data, setOpts!)
     if (dataId === undefined) {
       return undefined
     }
@@ -217,6 +230,24 @@ export function collection<T> (
 
     const created = opts!.create!(data, Object.assign({}, opts as any, setOpts))
     items.push(created)
+    return created
+  }
+
+  function create (data: IObjectLike, createOpts?: ICollectionOptions<T>): T
+  function create (data: IObjectLike[], createOpts?: ICollectionOptions<T>): T[]
+  function create (data: IObjectLike | IObjectLike[], createOpts?: ICollectionOptions<T>): T | T[] {
+    if (Array.isArray(data)) {
+      return create(data, createOpts)
+    }
+
+    createOpts = Object.assign({}, opts as any, createOpts)
+    const dataId = createOpts!.getDataId!(data, createOpts!)
+    if (dataId !== undefined && dataId !== null) {
+      return this.set(data, createOpts)
+    }
+
+    const created = createOpts!.create!(data, createOpts!)
+    add(created)
     return created
   }
 
