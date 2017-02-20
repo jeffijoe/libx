@@ -9,7 +9,7 @@
 [![npm](https://img.shields.io/npm/l/libx.svg?maxAge=1000)](https://github.com/jeffijoe/libx/blob/master/LICENSE.md)
 [![node](https://img.shields.io/node/v/libx.svg?maxAge=1000)](https://www.npmjs.com/package/libx)
 
-Collection + Model infrastructure for MobX applications. Written in TypeScript.
+Collection + Model infrastructure for [MobX](https://github.com/mobxjs/mobx) applications. Written in [TypeScript](https://github.com/Microsoft/TypeScript).
 
 ## Install
 
@@ -22,7 +22,7 @@ npm install --save libx
 Maintaining large application state is hard. Maintaining single references to entities for a single source of truth is 
 hard. But it doesn't have to be.
 
-**LibX** is inspired by Backbone's notion of Collections and Models, and makes it sexy by using MobX to manage state,
+**LibX** is inspired by [Backbone](https://github.com/jashkenas/backbone)'s notion of Collections and Models, and makes it sexy by using [MobX](https://github.com/mobxjs/mobx) to manage state,
 instead of using events.
 
 **TL;DR:** Maintaining only a single instance of a model is a chore. With LibX, it's not.
