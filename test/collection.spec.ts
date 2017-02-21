@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import { collection, Model, ICollection } from '../src'
+import { IObjectLike } from '../src/collection'
 
 describe('collection', () => {
   it('can be created', () => {
@@ -31,6 +32,18 @@ describe('collection', () => {
       c.set({ id: 1 })
       expect(c.get(1)).to.be.ok
     })
+
+    it('supports adding multiple', () => {
+      const c = collection<Model>()
+      const a = c.set([
+        { id: 1 },
+        { id: 2 }
+      ])
+      const m1 = a![0]
+      const m2 = a![1]
+      expect(m1.id).to.equal(1)
+      expect(m2.id).to.equal(2)
+    })
   })
 
   describe('#create', () => {
@@ -46,6 +59,17 @@ describe('collection', () => {
       const o1 = c.set({id: 1})
       const o2 = c.create({ hello: 'world' })
       expect(o2.hello).to.equal('world')
+    })
+
+    it('adds multiple', () => {
+      const c = collection<{ id: number, hello?: string }>()
+      const o1 = c.set({id: 1})
+      const [o2, o3] = c.create([
+        { hello: 'world' },
+        { id: 3, hello: 'libx' }
+      ] as IObjectLike[])
+      expect(o2.hello).to.equal('world')
+      expect(o3.id).to.equal(3)
     })
   })
 
