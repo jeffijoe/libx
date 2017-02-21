@@ -236,13 +236,13 @@ export function collection<T> (
   function create (data: IObjectLike, createOpts?: ICollectionOptions<T>): T
   function create (data: IObjectLike | IObjectLike[], createOpts?: ICollectionOptions<T>): T | T[] {
     if (Array.isArray(data)) {
-      return create(data, createOpts)
+      return data.map(d => create(d, createOpts))
     }
 
     createOpts = Object.assign({}, opts as any, createOpts)
     const dataId = createOpts!.getDataId!(data, createOpts!)
     if (dataId !== undefined && dataId !== null) {
-      return this.set(data, createOpts)
+      return set(data as any, createOpts) as T[]
     }
 
     const created = createOpts!.create!(data, createOpts!)
