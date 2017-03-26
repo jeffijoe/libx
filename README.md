@@ -17,6 +17,44 @@ Collection + Model infrastructure for [MobX](https://github.com/mobxjs/mobx) app
 npm install --save libx
 ```
 
+# Table of Contents
+
+* [Why?](#why)
+* [Examples](#examples)
+* [Concepts](#concepts)
+   * [The Root Store](#the-root-store)
+   * [Store](#store)
+   * [Collection](#collection)
+   * [Model](#model)
+* [Let's build an app!](#lets-build-an-app)
+   * [Step 1: the Root Store](#step-1-the-root-store)
+   * [Step 2: the TodoStore and <code>Todo</code> model](#step-2-the-todostore-and-todo-model)
+   * [Step 3: the UserStore and <code>User</code> model](#step-3-the-userstore-and-user-model)
+   * [Step 4: the UI](#step-4-the-ui)
+* [API documentation](#api-documentation)
+   * [collection([opts])](#collectionopts)
+      * [Collection object](#collection-object)
+      * [collection.items](#collectionitems)
+      * [collection.length](#collectionlength)
+      * [collection.add(models)](#collectionaddmodels)
+      * [collection.create(data, [opts])](#collectioncreatedata-opts)
+      * [collection.get(id)](#collectiongetid)
+      * [collection.set(data, [opts])](#collectionsetdata-opts)
+      * [collection.clear()](#collectionclear)
+      * [collection.remove(modelOrId)](#collectionremovemodelorid)
+      * [LoDash methods](#lodash-methods)
+   * [The Model class](#the-model-class)
+      * [constructor (attributes, opts)](#constructor-attributes-opts)
+      * [rootStore](#rootstore)
+      * [set (attributes, opts)](#set-attributes-opts)
+      * [parse (attributes, opts)](#parse-attributes-opts)
+      * [pick (properties)](#pick-properties)
+   * [The Store class](#the-store-class)
+      * [store.collection(opts)](#storecollectionopts)
+   * [createRootStore(obj)](#createrootstoreobj)
+* [See Also](#see-also)
+* [Author](#author)
+
 # Why?
 
 Maintaining large application state is hard. Maintaining single references to entities for a single source of truth is 
@@ -30,6 +68,92 @@ instead of using events.
 # Examples
 
 See the [TypeScript example][ts-example] and [Babel example][babel-example] for runnable examples (in Node).
+
+# Concepts
+
+LibX concepts are similar to those of Backbone: **Models** and **Collections** are used to represent your domain data. LibX also adds the Flux concept of **Stores**.
+
+## The Root Store
+
+Just a fancy name for an object (or instance of a class) that references all your stores. Yes, it will work with Server Side Rendering, too. A root
+store is by no means required to build apps with LibX - it's just convenient.
+
+**Example:**
+
+```js
+import TodoStore from './TodoStore'
+import UserStore from './UserStore'
+
+class RootStore {
+  constructor () {
+    this.userStore = new UserStore({ rootStore: this })
+    this.todoStore = new TodoStore({ rootStore: this })
+  }
+}
+```
+
+## Store
+
+A store maintains "top-level" state, like collections, and _whether or not some sidebar is visible_.
+
+It also contains **actions**: a means of mutating state. While not required, it is recommended that all actions and logic is implemented in stores.
+
+**Example:**
+
+```js
+import { action } from 'mobx'
+import { Store } from 'libx'
+import Todo from '../models/Todo'
+
+export default class TodoStore extends Store {
+  todos = this.collection({
+    model: Todo
+  })
+  
+  @action createTodo (text) {
+    return http.post('/todos', {
+      text: text
+    }).then((data) => {
+      this.todos.set(data)
+    })
+  }
+  
+  @action toggle (todo) {
+    const completed = !todo.completed
+    todo.set({ completed: completed })
+    return http.patch('/todos/' + todo.id, {
+      completed: todo.completed
+    })
+      // this will update the todo model, because it's already
+      // in the collection with the same ID.
+      .then(this.todos.set) 
+  }
+}
+```
+
+## Collection
+
+Maintains a collection of models, making sure we only have a single instance of an entity in memory. That way, updates to an entity will propagate to the entire system without us having to do anything at all.
+
+**Example:** see the [`Store`](#store) example.
+
+## Model
+
+Represents a concept of your own domain, like a `User`, a `Todo`, a `Product` or whatever your domain deals with.
+
+Models usually have observable and computed properties, and no actions other than the built-in `set()`. If you want to, you can give your models actions, but it is recommended to keep all actions in the stores.
+
+**Example:**
+
+```js
+import { observable } from 'mobx'
+import { Model } from 'libx'
+
+export default class Todo extends Model {
+  @observable text = ''
+  @observable completed = false
+}
+```
 
 # Let's build an app!
 
@@ -94,7 +218,7 @@ const rootStore = createRootStore({
 
 That was the root store. Now let's implement the `TodoStore`.
 
-# Step 2 : the `TodoStore` and `Todo` model
+## Step 2: the `TodoStore` and `Todo` model
 
 A Store in LibX is just a glorified state container. It can contain your data, UI state, whatever. However the
 most common case is to store a collection of models.
@@ -212,7 +336,7 @@ And for existing items:
 todo.set(data, { parse: true })
 ```
 
-# Step 3: the `UserStore` and `User` model
+## Step 3: the `UserStore` and `User` model
 
 Same as the Todo store, except if you paid attention to the JSON example,
 you might have noticed that users have an `_id` attribute instead of the conventional `id`.
@@ -245,7 +369,7 @@ class User extends Model {
 
 Since we don't do any fancy parsing, that's all we need!
 
-# Step 4: the UI
+## Step 4: the UI
 
 Like with MobX, you can use any UI library you want. I like React, so I'll use that.
 
@@ -465,7 +589,7 @@ The object returned from `collection()` has the following properties and functio
 
 ### `collection.items`
 
-A MoBX observable array of items.
+A MobX observable array of items.
 
 ### `collection.length`
 
@@ -480,14 +604,14 @@ Supports 2 variants: `add(model)` and `add([model1, model2])`.
 
 **Returns:** the collection.
 
-### `collection.create(data, opts)`
+### `collection.create(data, [opts])`
 
 Like `set`, but will add regardless of whether an id is present or not.
 This has the added risk of resulting multiple model instances if you don't make sure
 to update the existing model once you do have an id. The model id is what makes the whole
 one-instance-per-entity work.
 
-Supports 2 variants: `create(obj)` and ´create([obj1, obj2])`.
+Supports 2 variants: `create(obj)` and `create([obj1, obj2])`.
 
 ### `collection.get(id)`
 
@@ -498,11 +622,13 @@ Gets items by ids. Supports 2 variants:
 
 Internally uses `getModelId`.
 
-### `collection.set(data, opts)`
+### `collection.set(data, [opts])`
 
 Given an object or an array of objects, intelligently adds or updates models.
 
-If a model representing the given input exists in the collection (_based on `getDataId` and `getModelId`_), the `update` is called. If not, the ´create` function is called and the result is added to the internal `items` array.
+If a model representing the given input exists in the collection 
+(_based on `getDataId` and `getModelId`_), the `update` is called. If not, the 
+`create` function is called and the result is added to the internal `items` array.
 
 **Returns:** the added/existing model(s), same style as `collection.get`.
 
@@ -541,7 +667,7 @@ Calls `Model.set` with the attributes and options, and also sets the `rootStore`
 
 - `attributes` - an object that will get assigned onto the model using ´set`.
 - `opts` - model options. These are passed to the initial `set` as well.
-- `opts.parse` - if true, calls `parse (attributes)` and assigns the result onto the model.
+- `opts.parse` - if true, calls `this.parse(attributes, opts)` and assigns the result to the model.
 - `opts.stripUndefined` - if true, strips out any undefined values before assigning to the model.
 - `opts.rootStore` - if set, will be assigned to the model.
 
@@ -549,7 +675,7 @@ Calls `Model.set` with the attributes and options, and also sets the `rootStore`
 
 A convenient reference to the root store (if it was passed to the constructor opts)
 
-### `set (attributes, opts)
+### `set (attributes, opts)`
 
 Assigns the attributes to the model instance. 
 
@@ -568,7 +694,7 @@ class Todo extends Model {
   parse (attributes, opts) {
     return {
       ...attributes,
-      completedAt: moment.parse(attributes.completedAt)
+      completedAt: moment(attributes.completedAt)
     }
   }
 }
@@ -634,7 +760,75 @@ const todo = new Todo({
 
 Picks the properties on the model. Basically LoDash's `_.pick(this, properties)`
 
-## The `RootStore`
+## The `Store` class
+
+If you don't mind using ES6 classes, you'll get a lot by using the `Store` as a base class for your stores:
+
+- it sets a reference to the `rootStore`
+- it has a nice `collection()` function.
+
+### `store.collection(opts)`
+
+Creates a [`collection`](#collection-object), but configured for use with
+a [`Model`](#the-model-class). It also passes in the store's `rootStore` reference to any created models.
+
+**Params:**
+
+- `opts` - options passed to `collection(opts)`
+- `opts.model` - class to instantiate for new models
+- `opts.stripUndefined` - default is now `true`
+- `opts.parse` - default is now `true`
+
+**Returns:** a collection.
+
+**Example:**
+
+```js
+class TodoStore extends Store {
+  // ES7 property initializer
+  todos = this.collection({
+    model: Todo,
+    stripUndefined: false
+  })
+}
+
+const root = { awesome: true }
+const store = new TodoStore({ rootStore: root })
+const todo = store.todos.set({ id: 1, text: 'Install LibX' })
+
+console.log(todo instanceof Todo) // true
+console.log(todo.rootStore.awesome) // true
+```
+
+## `createRootStore(obj)`
+
+Easiest way to create a simple root store. A root store, as described earlier, isn't that magical; it's just an object that holds references to all other stores.
+
+**Params:**
+
+- `obj` - example: `{ userStore: UserStore }`
+
+**Returns:** the root store object.
+
+**Example:**
+
+```js
+class UserStore extends Store { ... }
+
+class TodoStore extends Store { ... }
+
+const rootStore = createRootStore({
+  userStore: UserStore,
+  todoStore: TodoStore
+})
+
+console.log(rootStore.userStore instanceof UserStore) // true
+```
+
+# See Also
+
+- [validx][validx] - MobX validation library
+- [mobx-task][mobx-task] - Async operation state management
 
 # Author
 
@@ -643,3 +837,5 @@ Jeff Hansen - [@Jeffijoe](https://twitter.com/Jeffijoe)
 [ts-example]: /examples/typescript
 [babel-example]: /examples/babel
 [lodash]: https://lodash.com
+[validx]: https://github.com/jeffijoe/validx
+[mobx-task]: https://github.com/jeffijoe/mobx-task

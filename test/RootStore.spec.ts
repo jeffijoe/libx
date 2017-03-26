@@ -1,5 +1,5 @@
 import { spy } from 'sinon'
-import { createRootStore } from '../src/RootStore'
+import { createRootStore } from '../src/rootStore'
 import { expect } from 'chai'
 import { Store } from '../src/Store'
 

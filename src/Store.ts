@@ -48,7 +48,8 @@ export class Store implements IStore {
         options: IModelCollectionOptions<TModel>
       ) => new opts.model(attributes, {
         stripUndefined: true,
-        parse: true, ...options
+        parse: true, 
+        ...options
       }),
       update: (
         existing: TModel,
@@ -56,7 +57,8 @@ export class Store implements IStore {
         options: IModelCollectionOptions<TModel>
       ) => existing.set(input, {
         stripUndefined: true,
-        parse: true, ...options
+        parse: true, 
+        ...options
       }),
       ...opts
     })
