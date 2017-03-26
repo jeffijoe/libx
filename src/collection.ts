@@ -3,6 +3,9 @@ const map = require('lodash/map')
 const filter = require('lodash/filter')
 const find = require('lodash/find')
 const some = require('lodash/some')
+const every = require('lodash/every')
+const reduce = require('lodash/reduce')
+const chunk = require('lodash/chunk')
 
 /**
  * Used in various Lodash functions such as `map`, `filter`..
@@ -70,6 +73,18 @@ export interface ICollection<T> {
    * Determines if there are any items that match the predicate.
    */
   some (iteratee: IIteratee<T, boolean>): boolean
+  /**
+   * Determines if all items match the predicate.
+   */
+  every (iteratee: IIteratee<T, boolean>): boolean
+  /**
+   * Chunks the collection.
+   */
+  chunk (size?: number): Array<Array<T>>
+  /**
+   * Reduces on the items.
+   */
+  reduce <R>(iteratee: IIteratee<T, R>, seed?: R): R
   /**
    * Finds a particular item.
    */
@@ -176,8 +191,11 @@ export function collection<T> (
     clear: action(clear),
     filter: bindLodashFunc(items, filter),
     some: bindLodashFunc(items, some),
+    every: bindLodashFunc(items, every),
     find: bindLodashFunc(items, find),
     map: bindLodashFunc(items, map),
+    reduce: bindLodashFunc(items, reduce),
+    chunk: bindLodashFunc(items, chunk),
     slice,
     get length () {
       return items.length

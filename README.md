@@ -375,9 +375,158 @@ and make millions. You're welcome.
 
 # API documentation
 
-Coming sooner or later - until then, feel free to inspect the examples and source code.
+This is just overall documentation for the exported modules.
 
-The source is pretty documented, so I strongly suggest you check it out.
+```js
+import { collection, Model, Store, RootStore } from 'libx'
+```
+
+## `collection([opts])`
+
+Creates a collection with the given options. The collection ensures no duplicate objects 
+are inserted based on an identification field and a bit of config.
+
+The `collection` function is used internally by `Store.collection` (which provides 
+aforementioned config), and can be used with plain objects. If you wish to use it 
+stand-alone, go right ahead.
+
+**Params:**
+
+- `opts.idAttribute` - defaults to `"id"`, the property used to determine whether to insert or update an item using the default `getModelId` and `getDataId`.
+- `opts.create` - function used to transform the input object to something else. Defaults to a function that just returns the input.
+  - Signature: `(data, opts) => stuffToAddToCollection`, with `opts` being the collection options.
+- `opts.update` - function used to merge input onto an existing object. Defaults to `(existing, input) => Object.assign(existing, input)`
+  - Signature: `(existing, data, opts) => void`, with `opts` being the collection options.
+- `opts.getModelId` - function used to get the ID from an existing object in the collection. Defaults to `(model) => model[idAttribute]`.
+- `opts.getDataId` - function used to get the ID from a raw object wanting to join the collection. Defaults to `(data) => data[idAttribute]`.
+
+**Example:**
+
+```js
+// Example todo "model" not using LibX's Model class.
+function todo (props) {
+  const self = observable({
+    text: '',
+    completed: false,
+    ...props,
+    set: (data) => Object.assign(self, data),
+    toggle: () => {
+      self.completed = !self.completed
+    }
+  })
+  
+  return self
+}
+
+const todos = collection({
+  create: todo,
+  update: (existing, data) => existing.set(data)
+})
+
+// Add an item
+const todo1 = todos.set({ 
+  // id = the magic sauce that makes it work
+  id: 1,
+  text: 'Install LibX',
+  completed: false
+})
+
+// Add the same item again, just updates the current one
+const todo1Instance2 = todos.set({ 
+  id: 1,
+  text: 'Install LibX and follow @jeffijoe on Twitter'
+})
+
+console.log(todo1 === todo1Instance2) // true
+console.log(todo1.text) // "Install LibX and follow @jeffijoe on Twitter"
+console.log(todo1.completed) // false
+todo1Instance2.toggle() // it's the same instance!
+console.log(todo1.completed) // true
+
+// Add multiple items
+todos.set([{ 
+  id: 1
+}, {
+  id: 2,
+  text: 'Build a great app'
+}, {
+  id: 3,
+  text: 'Profit'
+}])
+
+console.log(todos.length) // 3, because the first was updated
+```
+
+### Collection object
+
+The object returned from `collection()` has the following properties and functions.
+
+**Note:** All functions accepting an `opts` will have the collection's options merged into them when calling functions like `create`, `update`, `getModelId` and `getDataId`.
+
+### `collection.items`
+
+A MoBX observable array of items.
+
+### `collection.length`
+
+Getter that returns the length of the `items` array.
+
+### `collection.add(models)`
+
+Adds one or more models to the end of collection (**does not call `create`**). No updating is
+done here, existing models (based on referential equality) are not added again.
+
+Supports 2 variants: `add(model)` and `add([model1, model2])`.
+
+**Returns:** the collection.
+
+### `collection.create(data, opts)`
+
+Like `set`, but will add regardless of whether an id is present or not.
+This has the added risk of resulting multiple model instances if you don't make sure
+to update the existing model once you do have an id. The model id is what makes the whole
+one-instance-per-entity work.
+
+Supports 2 variants: `create(obj)` and ´create([obj1, obj2])`.
+
+### `collection.get(id)`
+
+Gets items by ids. Supports 2 variants:
+
+- `collection.get(id)` - returns the found model, or undefined.
+- `collection.get([id1, id2])` - returns an array of found models. If a model isn't found, it is set to `undefined` in the result array (as in `[model1, undefined, model3]`).
+
+Internally uses `getModelId`.
+
+### `collection.set(data, opts)`
+
+Given an object or an array of objects, intelligently adds or updates models.
+
+If a model representing the given input exists in the collection (_based on `getDataId` and `getModelId`_), the `update` is called. If not, the ´create` function is called and the result is added to the internal `items` array.
+
+**Returns:** the added/existing model(s), same style as `collection.get`.
+
+### `collection.clear()`
+
+Clears the internal `items` array.
+
+### `collection.remove(modelOrId)`
+
+Removes a model based on ID or the model itself.
+
+**Returns:** the collection.
+
+### LoDash methods
+
+The following [LoDash][lodash] array methods are available (and TS-typed) on the collection:
+
+- `map`
+- `reduce`
+- `filter`
+- `some`
+- `every`
+- `find`
+- `slice`
 
 # Author
 
@@ -385,3 +534,4 @@ Jeff Hansen - [@Jeffijoe](https://twitter.com/Jeffijoe)
 
 [ts-example]: /examples/typescript
 [babel-example]: /examples/babel
+[lodash]: https://lodash.com
