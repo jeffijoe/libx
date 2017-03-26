@@ -46,7 +46,7 @@ export interface IModel {
 }
 
 /**
- * The Model class in all it's glory.
+ * The Model class in all its' glory.
  */
 export class Model implements IModel {
   /**

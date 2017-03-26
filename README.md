@@ -375,10 +375,10 @@ and make millions. You're welcome.
 
 # API documentation
 
-This is just overall documentation for the exported modules.
+This is documentation for the exported modules.
 
 ```js
-import { collection, Model, Store, RootStore } from 'libx'
+import { collection, Model, Store, createRootStore } from 'libx'
 ```
 
 ## `collection([opts])`
@@ -527,6 +527,114 @@ The following [LoDash][lodash] array methods are available (and TS-typed) on the
 - `every`
 - `find`
 - `slice`
+- `chunk`
+
+## The `Model` class
+
+If you don't mind using ES6 classes, extend from this. It provides some nice things, such as...
+
+### constructor (attributes, opts)
+
+Calls `Model.set` with the attributes and options, and also sets the `rootStore` on the model if it's passed in.
+
+**Params:**
+
+- `attributes` - an object that will get assigned onto the model using ´set`.
+- `opts` - model options. These are passed to the initial `set` as well.
+- `opts.parse` - if true, calls `parse (attributes)` and assigns the result onto the model.
+- `opts.stripUndefined` - if true, strips out any undefined values before assigning to the model.
+- `opts.rootStore` - if set, will be assigned to the model.
+
+### `rootStore`
+
+A convenient reference to the root store (if it was passed to the constructor opts)
+
+### `set (attributes, opts)
+
+Assigns the attributes to the model instance. 
+
+If `opts.parse` is `true`, calls `this.parse(attributes, opts)` and assigns the result onto the object.
+
+If `opts.stripUndefined` is `true`, removes all undefined values from the result.
+
+**Params:** same as `constructor`.
+
+**Returns:** the model instance.
+
+**Example:** transform data before assignment using `parse`
+
+```js
+class Todo extends Model {
+  parse (attributes, opts) {
+    return {
+      ...attributes,
+      completedAt: moment.parse(attributes.completedAt)
+    }
+  }
+}
+
+const todo = new Todo({ text: 'Install LibX' })
+
+todo.set({
+  completed: true,
+  completedAt: '2017-02-29T12:00:00Z'
+}, {
+  parse: true
+})
+```
+
+**Example:** strip out undefined values
+
+```js
+const todo = new Todo({ 
+  text: 'Install LibX'
+})
+
+todo.set({
+  text: undefined
+}, { 
+  stripUndefined: true 
+})
+
+console.log(todo.text) // "Install LibX"
+```
+
+### `parse (attributes, opts)`
+
+Called by `set` when `parse: true` is passed to it. Gives the model a chance to massage the data into something it wants to work it. Commonly used to transform embedded data (denormalized) into references (normalized).
+
+**Example:** normalization
+
+Imagine there being a root store + a user store.
+
+```js
+class Todo extends Model {
+  parse (attributes, opts) {
+    // The attributes has a `creator` object, we want to normalize it.
+    const creator = this.rootStore.userStore.users.set(attributes.creator)
+    return {
+      ...attributes,
+      creator
+    }
+  }
+}
+
+const todo = new Todo({
+  text: 'Install MobX',
+  creator: {
+    id: 1,
+    name: 'Jeff Hansen'
+  }
+}, {
+  parse: true
+})
+```
+
+### `pick (properties)`
+
+Picks the properties on the model. Basically LoDash's `_.pick(this, properties)`
+
+## The `RootStore`
 
 # Author
 
