@@ -1,6 +1,6 @@
 {
   "name": "libx",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Collection + Model library for MobX",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
