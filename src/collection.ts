@@ -6,6 +6,7 @@ const some = require('lodash/some')
 const every = require('lodash/every')
 const reduce = require('lodash/reduce')
 const chunk = require('lodash/chunk')
+const orderBy = require('lodash/orderBy')
 
 /**
  * Used in various Lodash functions such as `map`, `filter`..
@@ -89,6 +90,10 @@ export interface ICollection<T> {
    * Finds a particular item.
    */
   find (iteratee: IIteratee<T, boolean>): T | undefined
+  /**
+   * Orders the items based on iteratees and orders.
+   */
+  orderBy (iteratees: Array<IIteratee<T, any>|Object|string>, orders?: Array<boolean|string>): T[]
   /**
    * Removes an item based on ID or the item itself.
    */
@@ -193,6 +198,7 @@ export function collection<T> (
     some: bindLodashFunc(items, some),
     every: bindLodashFunc(items, every),
     find: bindLodashFunc(items, find),
+    orderBy: bindLodashFunc(items, orderBy),
     map: bindLodashFunc(items, map),
     reduce: bindLodashFunc(items, reduce),
     chunk: bindLodashFunc(items, chunk),

@@ -654,6 +654,7 @@ The following [LoDash][lodash] array methods are available (and TS-typed) on the
 - `find`
 - `slice`
 - `chunk`
+- `orderBy`
 
 ## The `Model` class
 
