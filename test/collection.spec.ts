@@ -110,6 +110,12 @@ describe('collection', () => {
       expect(c.get(2)).to.equal(undefined)
     })
 
+    it('returns undefined when passed undefined or null', () => {
+      const c = collection<Model>()
+      expect(c.get(undefined)).to.equal(undefined)
+      expect(c.get(null)).to.equal(undefined)
+    })
+
     it('can get multiple items', () => {
       const c = collection<{ id: number}>()
       c.set({ id: 1 })
@@ -202,13 +208,13 @@ describe('collection', () => {
     it('#slice', () => {
       expect(c.slice(0, 1).length).to.equal(1)
     })
-    
+
     it('#orderBy', () => {
       let ordered = c.orderBy(['name'], ['asc'])
       expect(ordered[0].name).to.equal('Amanda')
       expect(ordered[1].name).to.equal('Jeff')
       expect(ordered[2].name).to.equal('Will')
-      
+
       ordered = c.orderBy(['name'], ['desc'])
       expect(ordered[0].name).to.equal('Will')
       expect(ordered[1].name).to.equal('Jeff')

@@ -211,6 +211,10 @@ export function collection<T> (
   function get (id: ModelId[]): Array<T | undefined>
   function get (id: ModelId): T | undefined
   function get (id: ModelId | ModelId[]): (T | undefined) | Array<T | undefined> {
+    if (id === undefined || id === null) {
+      return undefined
+    }
+
     const idAsString: string = id.toString()
     return Array.isArray(id) ? id.map(get) as T[] : items.find((item) => {
       const modelId = opts!.getModelId!(item, opts!)
