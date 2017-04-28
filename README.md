@@ -730,6 +730,11 @@ console.log(todo.text) // "Install LibX"
 
 Called by `set` when `parse: true` is passed to it. Gives the model a chance to massage the data into something it wants to work it. Commonly used to transform embedded data (denormalized) into references (normalized).
 
+The `parse` function is responsible for 2 things:
+
+* Update any other data stores in case of embedded data
+* Return props to be merged onto the new/existing in-memory model instance.
+
 **Example:** normalization
 
 Imagine there being a root store + a user store.
@@ -756,6 +761,64 @@ const todo = new Todo({
   parse: true
 })
 ```
+
+#### Parent -> Child -> Parent parsing
+
+Let's say you have the following input JSON:
+
+```json
+{
+  "id": "post123",
+  "title": "Upgrading your JS Life",
+  "author": "Abraham Lincoln",
+  "category": {
+    "id": "category123",
+    "name": "Developer Tips",
+    "latestPost": {
+      "id": "post123",
+      "title": "Upgrading your JS Life"
+    }
+  }
+}
+```
+
+And a set of models and stores for those 2 entities (stores left out for brevity):
+
+```js
+class Post extends Model {
+  parse ({ category, ...json }) {
+    return {
+      ...json,
+      category: this.rootStore.categoryStore.categories.set(category)
+    }
+  }
+}
+
+class Category extends Model {
+  parse ({ latestPost, ...json }) {
+    return {
+      ...json,
+      latestPost: this.rootStore.postStore.posts.set(latestPost)
+    }
+  }
+} 
+```
+
+In LibX 0.1.x, this would wrongfully result in 2 `Post` instances, because:
+
+- Check if we have a post with id `post123`
+  - We don't, parse the data into a new `Post` instance
+    - Check if we have a category with id `category123`
+      - We don't, parse the data into a new `Category` instance
+        - Check if we have a post with id `post123`
+          - We don't, parse the data into a new `Post` instance
+          - Add the created `Post` to the collection
+      - Add the created `Category` to the collection
+  - Add the created `Post` to the collection
+
+As of version 0.2.0, parsing a 3+ level deep parent->child->parent structure no longer results in duplicate models.
+This works by checking the collection _after parsing_ to see if a model with the same ID was added to the collection.
+If it was, parse the data _again_ but while _updating the existing model_.
 
 ### `pick (properties)`
 

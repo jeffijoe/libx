@@ -44,6 +44,57 @@ describe('collection', () => {
       expect(m1.id).to.equal(1)
       expect(m2.id).to.equal(2)
     })
+
+    describe('circular reference parsing', () => {
+      it('only adds one', () => {
+        function parseParent ({ child, ...data }: any) {
+          child = c2.set(child)
+          return {
+            ...data,
+            child
+          }
+        }
+
+        function parseChild ({ parent, ...data }: any) {
+          parent = c1.set(parent)
+          return {
+            ...data,
+            parent
+          }
+        }
+
+        const c1 = collection<any>({
+          create: (data) => parseParent(data),
+          update: (existing, data) => Object.assign(existing, parseParent(data))
+        })
+
+        const c2 = collection<any>({
+          create: (data) => parseChild(data),
+          update: (existing, data) => Object.assign(existing, parseChild(data))
+        })
+
+        const data = {
+          id: 'p1',
+          prop1: 'hello',
+          child: {
+            id: 'c1',
+            parent: {
+              id: 'p1',
+              prop2: 'world'
+            }
+          }
+        }
+
+        const parent = c1.set(data)
+        const child = c2.get('c1')
+        expect(c1.length).to.equal(1)
+        expect(c2.length).to.equal(1)
+        expect(parent.prop1).to.equal('hello')
+        expect(parent.prop2).to.equal('world')
+        expect(parent.child).to.equal(child)
+        expect(child.parent).to.equal(parent)
+      })
+    })
   })
 
   describe('#create', () => {

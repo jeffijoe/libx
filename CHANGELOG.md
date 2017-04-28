@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+* parsing a 3+ level deep parent->child->parent structure no longer results in duplicate models. This works by checking the collection _after parsing_ to see if a model with the same ID was added to the collection. If it was, parse the data _again_ but while _updating the existing model_. Refer to the README for an example.
+
 ## 0.1.7
 
 * Calling `collection.get(undefined)` no longer errors when passed null or undefined.

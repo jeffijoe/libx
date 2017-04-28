@@ -249,13 +249,22 @@ export function collection<T> (
 
     dataId = dataId.toString()
 
-    const existing = get(dataId as string)
+    let existing = get(dataId as string)
     if (existing) {
       opts!.update!(existing, data, Object.assign({}, opts as any, setOpts))
       return existing
     }
 
     const created = opts!.create!(data, Object.assign({}, opts as any, setOpts))
+
+    // If creating this object resulted in another object with the same ID being
+    // added, reuse it instead of adding this new one.
+    existing = get(dataId as string)
+    if (existing) {
+      opts!.update!(existing, data, Object.assign({}, opts as any, setOpts))
+      return existing
+    }
+
     items.push(created)
     return created
   }
