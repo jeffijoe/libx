@@ -42,7 +42,7 @@ npm install --save libx
       * [collection.set(data, [opts])](#collectionsetdata-opts)
       * [collection.clear()](#collectionclear)
       * [collection.remove(modelOrId)](#collectionremovemodelorid)
-      * [collection.move(fromIndex, toIndex)](#collectionmovefromindextoindex)
+      * [collection.move(fromIndex, toIndex)](#collectionmovefromindex-toindex)
       * [LoDash methods](#lodash-methods)
    * [The Model class](#the-model-class)
       * [constructor (attributes, opts)](#constructor-attributes-opts)
