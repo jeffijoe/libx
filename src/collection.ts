@@ -102,6 +102,10 @@ export interface ICollection<T> {
    * Slices the array.
    */
   slice (start?: number, end?: number): T[]
+  /**
+   * Moves an item from one index to another, using MobX's `move`.
+   */
+  move (fromIndex: number, toIndex: number): this
 }
 
 /**
@@ -203,6 +207,7 @@ export function collection<T> (
     reduce: bindLodashFunc(items, reduce),
     chunk: bindLodashFunc(items, chunk),
     slice,
+    move,
     get length () {
       return items.length
     }
@@ -316,6 +321,11 @@ export function collection<T> (
 
   function slice (start?: number, end?: number) {
     return items.slice(start, end)
+  }
+
+  function move (fromIndex: number, toIndex: number) {
+    items.move(fromIndex, toIndex)
+    return self
   }
 
   return self

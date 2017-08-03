@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+* Added `collection.move(fromIndex: number, toIndex: number)` which calls `items.move` on the inner Observable Array
+
 ## 0.2.0
 
 * parsing a 3+ level deep parent->child->parent structure no longer results in duplicate models. This works by checking the collection _after parsing_ to see if a model with the same ID was added to the collection. If it was, parse the data _again_ but while _updating the existing model_. Refer to the README for an example.

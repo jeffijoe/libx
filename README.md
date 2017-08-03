@@ -42,6 +42,7 @@ npm install --save libx
       * [collection.set(data, [opts])](#collectionsetdata-opts)
       * [collection.clear()](#collectionclear)
       * [collection.remove(modelOrId)](#collectionremovemodelorid)
+      * [collection.move(fromIndex, toIndex)](#collectionmovefromindextoindex)
       * [LoDash methods](#lodash-methods)
    * [The Model class](#the-model-class)
       * [constructor (attributes, opts)](#constructor-attributes-opts)
@@ -639,6 +640,10 @@ Clears the internal `items` array.
 ### `collection.remove(modelOrId)`
 
 Removes a model based on ID or the model itself.
+
+### `collection.move(fromIndex, toIndex)`
+
+Moves an item from one index to another. Delegates to the inner Observable Array's `move` function.
 
 **Returns:** the collection.
 

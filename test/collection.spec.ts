@@ -218,6 +218,18 @@ describe('collection', () => {
     })
   })
 
+  describe('move', () => {
+    it('works', () => {
+      type Value = { id: number }
+      const c: ICollection<Value> = collection<Value>()
+      c.set([{ id: 1 }, { id: 2 }, { id: 3 }])
+      c.move(0, 2)
+      expect(c.items[0].id).to.equal(2)
+      expect(c.items[1].id).to.equal(3)
+      expect(c.items[2].id).to.equal(1)
+    })
+  })
+
   describe('lodash functions', () => {
     type Value = { id: number; name: string; gender: 'male' | 'female' }
     let c: ICollection<Value>
