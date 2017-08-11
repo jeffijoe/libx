@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+* Added `collection.forEach` and `collection.at`.
+
 ## 0.2.1
 
 * Added `collection.move(fromIndex: number, toIndex: number)` which calls `items.move` on the inner Observable Array

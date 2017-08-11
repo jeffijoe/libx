@@ -283,6 +283,23 @@ describe('collection', () => {
       expect(ordered[1].name).to.equal('Jeff')
       expect(ordered[2].name).to.equal('Amanda')
     })
+
+    it('#forEach', () => {
+      const touchedValues: Array<Value> = []
+      const touchedIndexes: Array<number> = []
+      c.forEach((item, index) => {
+        touchedValues.push(item)
+        touchedIndexes.push(index)
+      })
+
+      expect(touchedValues).to.deep.equal(c.slice())
+      expect(touchedIndexes).to.deep.equal(c.map((x, i) => i))
+    })
+
+    it('#at', () => {
+      expect(c.at(0)).to.equal(c.items[0])
+      expect(c.at(1)).to.equal(c.items[1])
+    })
   })
 
   describe('#clear', () => {

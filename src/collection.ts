@@ -6,6 +6,7 @@ const some = require('lodash/some')
 const every = require('lodash/every')
 const reduce = require('lodash/reduce')
 const chunk = require('lodash/chunk')
+const forEach = require('lodash/forEach')
 const orderBy = require('lodash/orderBy')
 
 /**
@@ -106,6 +107,14 @@ export interface ICollection<T> {
    * Moves an item from one index to another, using MobX's `move`.
    */
   move (fromIndex: number, toIndex: number): this
+  /**
+   * Returns the item at the specified index.
+   */
+  at (index: number): T | undefined
+  /**
+   * Runs a `forEach` over the items and returns the collection.
+   */
+  forEach (iteratee: IIteratee<T, any>): this
 }
 
 /**
@@ -206,6 +215,11 @@ export function collection<T> (
     map: bindLodashFunc(items, map),
     reduce: bindLodashFunc(items, reduce),
     chunk: bindLodashFunc(items, chunk),
+    forEach: (iteratee: IIteratee<T, any>) => {
+      forEach(items, iteratee)
+      return self
+    },
+    at: (index: number) => items[index],
     slice,
     move,
     get length () {

@@ -43,11 +43,11 @@
   },
   "homepage": "https://github.com/jeffijoe/libx#readme",
   "devDependencies": {
-    "@types/chai": "^4.0.2",
+    "@types/chai": "^4.0.3",
     "@types/mocha": "^2.2.41",
-    "@types/node": "^8.0.19",
+    "@types/node": "^8.0.20",
     "@types/sinon-chai": "^2.7.28",
-    "chai": "^4.1.0",
+    "chai": "^4.1.1",
     "coveralls": "^2.13.1",
     "lodash": "^4.17.4",
     "mobx": "^3.2.2",
@@ -55,9 +55,9 @@
     "nodemon": "^1.11.0",
     "nyc": "^11.1.0",
     "rimraf": "^2.6.1",
-    "sinon": "^2.4.1",
+    "sinon": "^3.2.0",
     "sinon-chai": "^2.12.0",
-    "tslint": "^5.5.0",
+    "tslint": "^5.6.0",
     "typescript": "^2.4.2"
   },
   "peerDependencies": {
