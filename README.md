@@ -55,10 +55,10 @@ npm install --save libx
         * [Parent -&gt; Child -&gt; Parent parsing](#parent---child---parent-parsing)
       * [.pick (properties)](#pick-properties)
   * [The model builder](#the-model-builder)
-      * [.extendObservable()](#extendobservable)
-      * [.withActions()](#withactions)
-      * [.assign()](#assign)
-      * [.decorate()](#decorate)
+      * [.extendObservable(properties)](#extendobservableproperties)
+      * [.withActions(actions)](#withactionsactions)
+      * [.assign(...properties)](#assignproperties)
+      * [.decorate(fn)](#decoratefn)
   * [The Store class](#the-store-class)
       * [store.collection(opts)](#storecollectionopts)
   * [createRootStore(obj)](#createrootstoreobj)
@@ -864,8 +864,6 @@ Invoking `model()` gives you an object with the same methods as a regular `Model
 
 **Important**: No props are set on the model until you explicitly call `set()`, as opposed to the `Model` constructor which calls `set` for you. Additionally, the `rootStore` is not set either, but that's okay because you can access the root store through your factory function's closure.
 
-In addition to the methods from `Model`, a `model()` object has the following additional methods.
-
 The one and only parameter to `model` is an optional `target` to enhance with model capabilities instead of an empty object.
 
 **Example:**
@@ -898,6 +896,8 @@ const Todo = (attrs, opts) => {
 // Look ma'! No `new`!
 const todo = Todo({ text: 'Use LibX', completed: true })
 ```
+
+In addition to the methods from `Model`, a `model()` object has the following additional methods.
 
 ### `.extendObservable(properties)`
 
