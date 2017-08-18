@@ -19,20 +19,23 @@ npm install --save libx
 
 # Table of Contents
 
+* [libx](#libx)
+  * [Install](#install)
+* [Table of Contents](#table-of-contents)
 * [Why?](#why)
 * [Examples](#examples)
 * [Concepts](#concepts)
-   * [The Root Store](#the-root-store)
-   * [Store](#store)
-   * [Collection](#collection)
-   * [Model](#model)
+  * [The Root Store](#the-root-store)
+  * [Store](#store)
+  * [Collection](#collection)
+  * [Model](#model)
 * [Let's build an app!](#lets-build-an-app)
-   * [Step 1: the Root Store](#step-1-the-root-store)
-   * [Step 2: the TodoStore and <code>Todo</code> model](#step-2-the-todostore-and-todo-model)
-   * [Step 3: the UserStore and <code>User</code> model](#step-3-the-userstore-and-user-model)
-   * [Step 4: the UI](#step-4-the-ui)
+  * [Step 1: the Root Store](#step-1-the-root-store)
+  * [Step 2: the TodoStore and <code>Todo</code> model](#step-2-the-todostore-and-todo-model)
+  * [Step 3: the UserStore and <code>User</code> model](#step-3-the-userstore-and-user-model)
+  * [Step 4: the UI](#step-4-the-ui)
 * [API documentation](#api-documentation)
-   * [collection([opts])](#collectionopts)
+  * [collection([opts])](#collectionopts)
       * [Collection object](#collection-object)
       * [collection.items](#collectionitems)
       * [collection.length](#collectionlength)
@@ -44,17 +47,24 @@ npm install --save libx
       * [collection.remove(modelOrId)](#collectionremovemodelorid)
       * [collection.move(fromIndex, toIndex)](#collectionmovefromindex-toindex)
       * [LoDash methods](#lodash-methods)
-   * [The Model class](#the-model-class)
+  * [The Model class](#the-model-class)
       * [constructor (attributes, opts)](#constructor-attributes-opts)
-      * [rootStore](#rootstore)
-      * [set (attributes, opts)](#set-attributes-opts)
-      * [parse (attributes, opts)](#parse-attributes-opts)
-      * [pick (properties)](#pick-properties)
-   * [The Store class](#the-store-class)
+      * [.rootStore](#rootstore)
+      * [.set (attributes, opts)](#set-attributes-opts)
+      * [.parse (attributes, opts)](#parse-attributes-opts)
+        * [Parent -&gt; Child -&gt; Parent parsing](#parent---child---parent-parsing)
+      * [.pick (properties)](#pick-properties)
+  * [The model builder](#the-model-builder)
+      * [.extendObservable()](#extendobservable)
+      * [.withActions()](#withactions)
+      * [.assign()](#assign)
+      * [.decorate()](#decorate)
+  * [The Store class](#the-store-class)
       * [store.collection(opts)](#storecollectionopts)
-   * [createRootStore(obj)](#createrootstoreobj)
+  * [createRootStore(obj)](#createrootstoreobj)
 * [See Also](#see-also)
 * [Author](#author)
+
 
 # Why?
 
@@ -682,9 +692,9 @@ The following [LoDash][lodash] array methods are available (and TS-typed) on the
 
 If you don't mind using ES6 classes, extend from this. It provides some nice things, such as...
 
-### constructor (attributes, opts)
+### `constructor (attributes, opts)`
 
-Calls `Model.set` with the attributes and options, and also sets the `rootStore` on the model if it's passed in.
+Calls `this.set` with the attributes and options, and also sets the `rootStore` on the model if it was passed in.
 
 **Params:**
 
@@ -889,7 +899,7 @@ const Todo = (attrs, opts) => {
 const todo = Todo({ text: 'Use LibX', completed: true })
 ```
 
-### `.extendObservable()`
+### `.extendObservable(properties)`
 
 Calls `mobx.extendObservable` with the model instance bound as the first parameter.
 
@@ -905,7 +915,7 @@ const m = model()
 extendObservable(m, { hello: 'world' })
 ```
 
-### `.withActions()`
+### `.withActions(actions)`
 
 Attaches actions to the model.
 
@@ -929,7 +939,7 @@ extendObservable(m, {
 })
 ```
 
-### `.assign()`
+### `.assign(...properties)`
 
 Shorthand to `Object.assign(m, ...)`
 
@@ -949,7 +959,7 @@ Object.assign(m, {
 })
 ```
 
-### `.decorate()`
+### `.decorate(fn)`
 
 Invokes the specified method with the model instance as the one and only argument.
 
