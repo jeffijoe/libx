@@ -1,4 +1,4 @@
-import { action } from 'mobx'
+import { action, extendObservable } from 'mobx'
 const pick = require('lodash/pick')
 const pickBy = require('lodash/pickBy')
 
@@ -46,6 +46,43 @@ export interface IModel {
 }
 
 /**
+ * A map of actions.
+ */
+export interface IActionsMap<T> {
+  [key: string]: (this: T, ...args: any[]) => any
+}
+
+/**
+ * Fluid model, used only with the model factory.
+ */
+export type IFluidModel<T> =T & IModel & {
+  /**
+   * Calls `Object.assign` with the model as the target.
+   */
+  assign <S>(source: S): IFluidModel<T & S>
+  assign <S1, S2>(source1: S1, source2: S2): IFluidModel<T & S1 & S2>
+  assign <S1, S2, S3>(source1: S1, source2: S2, source3: S3): IFluidModel<T & S1 & S2 & S3>
+  assign (...sources: any[]): IFluidModel<T>
+
+  /**
+   * Calls `extendObservable` on itself.
+   */
+  extendObservable <O>(properties: O): IFluidModel<T & O>
+
+  /**
+   * Adds the specified actions to the model.
+   */
+  withActions <A> (actions: A): IFluidModel<T & A>
+
+  /**
+   * Invokes the specified function with the model as the first parameter,
+   * it should modify the model in-place. Return value is for TypeScript
+   * type inference only, the passed-in model is actually returned.
+   */
+  decorate <D>(fn: (target: IFluidModel<T>) => D): IFluidModel<T & D>
+}
+
+/**
  * The Model class in all its' glory.
  */
 export class Model implements IModel {
@@ -71,7 +108,7 @@ export class Model implements IModel {
    */
   set (attributes: IObjectHash, options?: IModelOptions): this {
     if (options) {
-      if (options.parse) {
+      if (options.parse && this.parse) {
         attributes = this.parse(attributes, options)
       }
 
@@ -100,4 +137,63 @@ export class Model implements IModel {
     // the given TypeScript generic.
     return pick(this, properties)
   }
+}
+
+/**
+ * Creates (or enhances) an object with Model capabilities.
+ *
+ * @param target Optional target object to enhance. Defaults to a new one.
+ */
+export function model<T extends {}> (target?: T): T & IFluidModel<T> {
+  target = target || {} as any
+  target = Object.assign(target, {
+    set: action('set', Model.prototype.set.bind(target)),
+    pick: Model.prototype.pick.bind(target),
+    parse: (target as any).parse || Model.prototype.parse.bind(target),
+    assign: Object.assign.bind(null, target),
+    extendObservable: extendObservable.bind(null, target),
+    withActions: withActions.bind(target),
+    decorate: decorate.bind(target)
+  }) as any
+
+  return target as T & IFluidModel<T>
+}
+
+/**
+ * Attaches `actions` to ´this`.
+ *
+ * @param this Object to attach actions to.
+ * @param actions Object with actions to attach. Each value is passed to ´action` and bound.
+ */
+function withActions <T, A extends { [key: string]: Function }> (
+  this: IFluidModel<T>,
+  actions: A
+): IFluidModel<T> & A {
+  const result = {} as any
+  for (const key in actions) {
+    if (Object.prototype.hasOwnProperty.call(actions, key)) {
+      const prop = actions[key]
+      if (typeof prop !== 'function') {
+        throw new Error(
+          'The object passed to withActions should only contain ' +
+          `functions, but found ${key}: ${typeof prop}`
+        )
+      }
+      result[key] = action(key, prop.bind(this))
+    }
+  }
+  return extendObservable(this, result)
+}
+
+/**
+ * Invokes the method that will decorate the passed-in model.
+ *
+ * @param fn Function to invoke passing in the model as the first parameter.
+ */
+function decorate<T, D> (
+  this: IFluidModel<T>,
+  fn: (target: IFluidModel<T>) => D
+): IFluidModel<T & D> {
+  fn(this)
+  return this as IFluidModel<T & D>
 }
