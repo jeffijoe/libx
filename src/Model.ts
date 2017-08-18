@@ -171,6 +171,7 @@ function withActions <T, A extends { [key: string]: Function }> (
 ): IFluidModel<T> & A {
   const result = {} as any
   for (const key in actions) {
+    // istanbul ignore else
     if (Object.prototype.hasOwnProperty.call(actions, key)) {
       const prop = actions[key]
       if (typeof prop !== 'function') {
