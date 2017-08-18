@@ -156,6 +156,23 @@ export default class Todo extends Model {
 }
 ```
 
+If you are not a fan of using classes, you can also use the `model` builder pattern.
+
+**Example:**
+
+```js
+import { model } from 'libx'
+
+export const Todo = (attrs, opts) => {
+  return model()
+    .extendObservable({
+      text: '',
+      completed: false
+    })
+    .set(attrs, opts)
+}
+```
+
 # Let's build an app!
 
 This section is mostly going to break down the Babel example for easier digestion. :smile:
@@ -677,11 +694,11 @@ Calls `Model.set` with the attributes and options, and also sets the `rootStore`
 - `opts.stripUndefined` - if true, strips out any undefined values before assigning to the model.
 - `opts.rootStore` - if set, will be assigned to the model.
 
-### `rootStore`
+### `.rootStore`
 
-A convenient reference to the root store (if it was passed to the constructor opts)
+A convenient reference to the root store (if it was passed to the constructor opts).
 
-### `set (attributes, opts)`
+### `.set (attributes, opts)`
 
 Assigns the attributes to the model instance. 
 
@@ -731,7 +748,7 @@ todo.set({
 console.log(todo.text) // "Install LibX"
 ```
 
-### `parse (attributes, opts)`
+### `.parse (attributes, opts)`
 
 Called by `set` when `parse: true` is passed to it. Gives the model a chance to massage the data into something it wants to work it. Commonly used to transform embedded data (denormalized) into references (normalized).
 
@@ -825,9 +842,152 @@ As of version 0.2.0, parsing a 3+ level deep parent->child->parent structure no 
 This works by checking the collection _after parsing_ to see if a model with the same ID was added to the collection.
 If it was, parse the data _again_ but while _updating the existing model_.
 
-### `pick (properties)`
+### `.pick (properties)`
 
 Picks the properties on the model. Basically LoDash's `_.pick(this, properties)`
+
+## The `model` builder
+
+If you're not a fan of using ES6 classes, you can use the `model` builder pattern instead.
+
+Invoking `model()` gives you an object with the same methods as a regular `Model`, plus a few more.
+
+**Important**: No props are set on the model until you explicitly call `set()`, as opposed to the `Model` constructor which calls `set` for you. Additionally, the `rootStore` is not set either, but that's okay because you can access the root store through your factory function's closure.
+
+In addition to the methods from `Model`, a `model()` object has the following additional methods.
+
+The one and only parameter to `model` is an optional `target` to enhance with model capabilities instead of an empty object.
+
+**Example:**
+
+```js
+// Factory function
+const Todo = (attrs, opts) => {
+  const { rootStore } = opts
+  // Create a model instance...
+  return model()
+    // Add some observables
+    .extendObservable({
+      text: '',
+      completed:  false,
+      creator: null
+    })
+    // Provide a custom `parse` implementation
+    .assign({
+      parse (attrs) {
+        return {
+          ...attrs,
+          creator: rootStore.userStore.users.set(attrs.creator)
+        }
+      }
+    })
+    // Finally set the passed in props.
+    .set(attrs, opts)
+}
+
+// Look ma'! No `new`!
+const todo = Todo({ text: 'Use LibX', completed: true })
+```
+
+### `.extendObservable()`
+
+Calls `mobx.extendObservable` with the model instance bound as the first parameter.
+
+**Example:**
+
+```js
+// This...
+const m = model()
+  .extendObservable({ hello: 'world' })
+
+// is the same as this...
+const m = model()
+extendObservable(m, { hello: 'world' })
+```
+
+### `.withActions()`
+
+Attaches actions to the model.
+
+**Example:**
+
+```js
+// This...
+const m = model()
+  .withActions({ 
+    someAction () {
+
+    }
+  })
+
+// is the same as this...
+const m = model()
+extendObservable(m, { 
+  someAction: action('someAction', function someAction () {
+
+  }.bind(m))
+})
+```
+
+### `.assign()`
+
+Shorthand to `Object.assign(m, ...)`
+
+**Example:**
+
+```js
+// This...
+const m = model()
+  .assign({
+    stuff: 'hello'
+  })
+
+// is the same as this...
+const m = model()
+Object.assign(m, { 
+  stuff: 'hello'
+})
+```
+
+### `.decorate()`
+
+Invokes the specified method with the model instance as the one and only argument.
+
+The return value is not used for anything but TypeScript type merging.
+
+This is useful for applying decorators/mixins.
+
+**Example:**
+
+```js
+function withValidation (requiredFields) {
+  return (target) => {
+    target.validate = () => {
+      // Returns `true` if every required field is present...
+      return requiredFields.every(f => !!target[f])
+    }
+  }
+}
+
+// This...
+const m = model()
+  .decorate(withValidation(['first', 'last']))
+  .extendObservable({
+    first: '',
+    last: ''
+  })
+
+// is the same as this...
+const m = model()
+withValidation(['first', 'last'])(m)
+extendObservable(m, {
+  first: '',
+  last: ''
+})
+
+// Now we can use the added `validate` method
+m.validate()
+```
 
 ## The `Store` class
 

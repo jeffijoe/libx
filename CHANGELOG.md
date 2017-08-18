@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+* Added factory-based model API.
+
 ## 0.2.2
 
 * Added `collection.forEach` and `collection.at`.
