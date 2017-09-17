@@ -11,6 +11,7 @@
     "build": "rimraf lib && tsc -p src",
     "test": "rimraf .test-out && tsc --skipLibCheck -p test && mocha .test-out/test/**/*.spec.js --require .test-out/test/index.js",
     "test:watch": "nodemon -e js,ts --exec npm run test",
+    "test:watch2": "tsc  --skipLibCheck -p test --watch & nodemon -e js,ts --exec mocha .test-out/test/**/*.spec.js --require .test-out/test/index.js",
     "lint": "tslint lib/ test/",
     "lint:watch": "nodemon --exec npm run lint",
     "cover": "nyc npm test",
