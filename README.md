@@ -1064,6 +1064,12 @@ const rootStore = createRootStore({
 console.log(rootStore.userStore instanceof UserStore) // true
 ```
 
+# Projects using LibX
+
+- [Posish](https://posish.now.sh) ([GitHub repo](https://github.com/jeffijoe/posish)) — a tool to generate code based on string positions
+
+Are you using LibX in your project and want it listed here? Submit a PR! :rocket:
+
 # See Also
 
 - [validx][validx] - MobX validation library
