@@ -1,12 +1,6 @@
 {
-  "extends": [
-    "tslint-config-standard"
-  ],
+  "extends": ["tslint-config-standard", "tslint-config-prettier"],
   "rules": {
-    "semicolon": false,
-    "quotemark": [
-      "single"
-    ],
     "no-var-requires": false,
     "trailing-comma": [false],
     "ordered-imports": false,

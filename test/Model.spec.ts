@@ -17,7 +17,7 @@ describe('Model', () => {
       class M extends Model {
         @observable hello: string
 
-        parse () {
+        parse() {
           return { hello: 'sucker' }
         }
       }
@@ -32,7 +32,7 @@ describe('Model', () => {
       class M extends Model {
         @observable hello: string
 
-        parse () {
+        parse() {
           return { hello: 'sucker' }
         }
       }
@@ -46,7 +46,7 @@ describe('Model', () => {
       class M extends Model {
         @observable hello: string
 
-        parse () {
+        parse() {
           return { hello: 'sucker' }
         }
       }
@@ -100,7 +100,7 @@ describe('model', () => {
     it('works', () => {
       const m = model().extendObservable({
         hello: 'world',
-        get world () {
+        get world() {
           return 1337
         }
       })
@@ -120,7 +120,7 @@ describe('model', () => {
           hello: 'people'
         })
         .withActions({
-          setHello (s: string) {
+          setHello(s: string) {
             this.hello = s
           }
         })
@@ -131,7 +131,9 @@ describe('model', () => {
     })
 
     it('fails when not a function', () => {
-      expect(() => model().withActions({ hello: 'haha' })).to.throw(/hello.*string/i)
+      expect(() => model().withActions({ hello: 'haha' })).to.throw(
+        /hello.*string/i
+      )
     })
   })
 
@@ -139,8 +141,12 @@ describe('model', () => {
     it('invokes the function', () => {
       const m = model()
         .assign({ hello: 'people' })
-        .decorate((t) => {
-          const v = { validate() { return t.hello === 'world' } }
+        .decorate(t => {
+          const v = {
+            validate() {
+              return t.hello === 'world'
+            }
+          }
           Object.assign(t, v)
           return null! as typeof v
         })

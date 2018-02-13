@@ -31,18 +31,18 @@ export interface IModel {
   /**
    * Sets attributes on the model, optionally calling `parse`.
    */
-  set (attributes: IObjectHash, options?: IModelOptions): this
+  set(attributes: IObjectHash, options?: IModelOptions): this
 
   /**
    * Called at various points, giving the model a chance to parse attributes
    * before setting them.
    */
-  parse (attributes: IObjectHash, options?: IModelOptions): IObjectHash
+  parse(attributes: IObjectHash, options?: IModelOptions): IObjectHash
 
   /**
    * Picks the specified properties from the model.
    */
-  pick <K extends keyof this> (properties: K[]): Pick<this, K>
+  pick<K extends keyof this>(properties: K[]): Pick<this, K>
 }
 
 /**
@@ -55,32 +55,37 @@ export interface IActionsMap<T> {
 /**
  * Fluid model, used only with the model factory.
  */
-export type IFluidModel<T> =T & IModel & {
-  /**
-   * Calls `Object.assign` with the model as the target.
-   */
-  assign <S>(source: S): IFluidModel<T & S>
-  assign <S1, S2>(source1: S1, source2: S2): IFluidModel<T & S1 & S2>
-  assign <S1, S2, S3>(source1: S1, source2: S2, source3: S3): IFluidModel<T & S1 & S2 & S3>
-  assign (...sources: any[]): IFluidModel<T>
+export type IFluidModel<T> = T &
+  IModel & {
+    /**
+     * Calls `Object.assign` with the model as the target.
+     */
+    assign<S>(source: S): IFluidModel<T & S>
+    assign<S1, S2>(source1: S1, source2: S2): IFluidModel<T & S1 & S2>
+    assign<S1, S2, S3>(
+      source1: S1,
+      source2: S2,
+      source3: S3
+    ): IFluidModel<T & S1 & S2 & S3>
+    assign(...sources: any[]): IFluidModel<T>
 
-  /**
-   * Calls `extendObservable` on itself.
-   */
-  extendObservable <O>(properties: O): IFluidModel<T & O>
+    /**
+     * Calls `extendObservable` on itself.
+     */
+    extendObservable<O>(properties: O): IFluidModel<T & O>
 
-  /**
-   * Adds the specified actions to the model.
-   */
-  withActions <A> (actions: A): IFluidModel<T & A>
+    /**
+     * Adds the specified actions to the model.
+     */
+    withActions<A>(actions: A): IFluidModel<T & A>
 
-  /**
-   * Invokes the specified function with the model as the first parameter,
-   * it should modify the model in-place. Return value is for TypeScript
-   * type inference only, the passed-in model is actually returned.
-   */
-  decorate <D>(fn: (target: IFluidModel<T>) => D): IFluidModel<T & D>
-}
+    /**
+     * Invokes the specified function with the model as the first parameter,
+     * it should modify the model in-place. Return value is for TypeScript
+     * type inference only, the passed-in model is actually returned.
+     */
+    decorate<D>(fn: (target: IFluidModel<T>) => D): IFluidModel<T & D>
+  }
 
 /**
  * The Model class in all its' glory.
@@ -89,13 +94,13 @@ export class Model implements IModel {
   /**
    * If attributes are specified, `set` is called along with the model options.
    */
-  constructor (attributes?: IObjectHash, options?: IModelOptions) {
+  constructor(attributes?: IObjectHash, options?: IModelOptions) {
     this.set = action('set', this.set.bind(this))
 
     // Just in case we have a root store,
     // set it so we don't need the initialize pattern.
     if (options && (options as any).rootStore) {
-      (this as any).rootStore = (options as any).rootStore
+      ;(this as any).rootStore = (options as any).rootStore
     }
 
     if (attributes) {
@@ -106,7 +111,7 @@ export class Model implements IModel {
   /**
    * Sets the attributes on the model, optionally calling `parse` first.
    */
-  set (attributes: IObjectHash, options?: IModelOptions): this {
+  set(attributes: IObjectHash, options?: IModelOptions): this {
     if (options) {
       if (options.parse && this.parse) {
         attributes = this.parse(attributes, options)
@@ -125,14 +130,14 @@ export class Model implements IModel {
   /**
    * Used to convert a raw object to something more meaningful.
    */
-  parse (attributes: IObjectHash, options?: IModelOptions): IObjectHash {
+  parse(attributes: IObjectHash, options?: IModelOptions): IObjectHash {
     return attributes
   }
 
   /**
    * Picks properties and returns them as an object.
    */
-  pick <K extends keyof this> (properties: K[]): Pick<this, K> {
+  pick<K extends keyof this>(properties: K[]): Pick<this, K> {
     // No guarantees that what is returned actually matches
     // the given TypeScript generic.
     return pick(this, properties)
@@ -144,8 +149,8 @@ export class Model implements IModel {
  *
  * @param target Optional target object to enhance. Defaults to a new one.
  */
-export function model<T extends {}> (target?: T): T & IFluidModel<T> {
-  target = target || {} as any
+export function model<T extends {}>(target?: T): T & IFluidModel<T> {
+  target = target || ({} as any)
   target = Object.assign(target, {
     set: action('set', Model.prototype.set.bind(target)),
     pick: Model.prototype.pick.bind(target),
@@ -165,7 +170,7 @@ export function model<T extends {}> (target?: T): T & IFluidModel<T> {
  * @param this Object to attach actions to.
  * @param actions Object with actions to attach. Each value is passed to ´action` and bound.
  */
-function withActions <T, A extends { [key: string]: Function }> (
+function withActions<T, A extends { [key: string]: Function }>(
   this: IFluidModel<T>,
   actions: A
 ): IFluidModel<T> & A {
@@ -174,10 +179,11 @@ function withActions <T, A extends { [key: string]: Function }> (
     // istanbul ignore else
     if (Object.prototype.hasOwnProperty.call(actions, key)) {
       const prop = actions[key]
+      /*tslint:disable-next-line*/
       if (typeof prop !== 'function') {
         throw new Error(
           'The object passed to withActions should only contain ' +
-          `functions, but found ${key}: ${typeof prop}`
+            `functions, but found ${key}: ${typeof prop}`
         )
       }
       result[key] = action(key, prop.bind(this))
@@ -191,7 +197,7 @@ function withActions <T, A extends { [key: string]: Function }> (
  *
  * @param fn Function to invoke passing in the model as the first parameter.
  */
-function decorate<T, D> (
+function decorate<T, D>(
   this: IFluidModel<T>,
   fn: (target: IFluidModel<T>) => D
 ): IFluidModel<T & D> {

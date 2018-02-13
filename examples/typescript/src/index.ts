@@ -25,7 +25,7 @@ class Todo extends Model {
 
   // Override `parse` to customize how we transform external JSON to
   // properties for this model.
-  parse (json: any) {
+  parse(json: any) {
     // We have a separate store for users, so
     // we set it there.
     const creator = this.rootStore.userStore.users.set(json.creator)
@@ -40,10 +40,9 @@ class Todo extends Model {
 class TodoStore extends Store {
   todos = this.collection<Todo>({ model: Todo })
 
-  fetchTodos () {
+  fetchTodos() {
     // Fetch the todos, then load them into the collection.
-    return API.getTodos()
-      .then(this.todos.set)
+    return API.getTodos().then(this.todos.set)
   }
 }
 
@@ -62,7 +61,7 @@ class UserStore extends Store {
     idAttribute: '_id' // just to demo.
   })
 
-  fetchUser (id: number) {
+  fetchUser(id: number) {
     return API.getUser(id).then(this.users.set)
   }
 }
@@ -75,7 +74,7 @@ class RootStore {
   todoStore: TodoStore
   userStore: UserStore
 
-  constructor () {
+  constructor() {
     const makeOpts = () => ({ rootStore: this })
 
     this.todoStore = new TodoStore(makeOpts())
@@ -101,7 +100,7 @@ todoStore.fetchTodos().then(todos => {
   assert(todo.creator._id === 1)
   assert(todo.creator.twitterHandle === undefined) // we don't have this yet.
 
-  return userStore.fetchUser(1).then((user) => {
+  return userStore.fetchUser(1).then(user => {
     assert(user === todo.creator) // Same instance, woah!
     assert(user.twitterHandle === 'mweststrate')
 

@@ -1,4 +1,3 @@
-
 import { IStoreOpts, Store } from '../src/Store'
 import { ICollection } from '../src/collection'
 import { Model, model } from '../src/Model'
@@ -17,7 +16,7 @@ class TestStore extends Store {
   otherStuffs: ICollection<any>
   rootStore: RootStore
 
-  constructor (opts: IStoreOpts) {
+  constructor(opts: IStoreOpts) {
     super(opts)
     this.stuffs = this.collection<Stuff>({
       model: Stuff
@@ -28,13 +27,13 @@ class TestStore extends Store {
   }
 }
 
-function OtherStuff (attrs, opts) {
+function OtherStuff(attrs, opts) {
   return model().set(attrs, opts)
 }
 
-describe('Store', function () {
-  describe('#collection', function () {
-    it('returns a model collection', function () {
+describe('Store', function() {
+  describe('#collection', function() {
+    it('returns a model collection', function() {
       const rootStore = new RootStore()
       const store = new TestStore({
         rootStore

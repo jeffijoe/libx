@@ -3,6 +3,7 @@
 ## 0.3.0
 
 * Added factory-based model API.
+* Internal ID map for faster `get` lookups.
 
 ## 0.2.2
 

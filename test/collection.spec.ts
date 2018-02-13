@@ -12,7 +12,7 @@ describe('collection', () => {
   describe('#set', () => {
     it('adds and reuses object', () => {
       const c = collection<Model>({
-        create: (input) => new Model(input),
+        create: input => new Model(input),
         update: (existing, input) => existing.set(input)
       })
       const result = c.set({ id: 1 })
@@ -35,10 +35,7 @@ describe('collection', () => {
 
     it('supports adding multiple', () => {
       const c = collection<Model>()
-      const a = c.set([
-        { id: 1 },
-        { id: 2 }
-      ])
+      const a = c.set([{ id: 1 }, { id: 2 }])
       const m1 = a![0]
       const m2 = a![1]
       expect(m1.id).to.equal(1)
@@ -47,7 +44,7 @@ describe('collection', () => {
 
     describe('circular reference parsing', () => {
       it('only adds one', () => {
-        function parseParent ({ child, ...data }: any) {
+        function parseParent({ child, ...data }: any) {
           child = c2.set(child)
           return {
             ...data,
@@ -55,7 +52,7 @@ describe('collection', () => {
           }
         }
 
-        function parseChild ({ parent, ...data }: any) {
+        function parseChild({ parent, ...data }: any) {
           parent = c1.set(parent)
           return {
             ...data,
@@ -64,12 +61,12 @@ describe('collection', () => {
         }
 
         const c1 = collection<any>({
-          create: (data) => parseParent(data),
+          create: data => parseParent(data),
           update: (existing, data) => Object.assign(existing, parseParent(data))
         })
 
         const c2 = collection<any>({
-          create: (data) => parseChild(data),
+          create: data => parseChild(data),
           update: (existing, data) => Object.assign(existing, parseChild(data))
         })
 
@@ -100,21 +97,21 @@ describe('collection', () => {
   describe('#create', () => {
     it('acts like #set if an id is present', () => {
       const c = collection<{ id: number }>()
-      const o1 = c.set({ id: 1})
-      const o2 = c.create({ id: 1})
+      const o1 = c.set({ id: 1 })
+      const o2 = c.create({ id: 1 })
       expect(o1).to.equal(o2)
     })
 
     it('adds the model even if it does not have an id', () => {
-      const c = collection<{ id: number, hello?: string }>()
-      const o1 = c.set({id: 1})
+      const c = collection<{ id: number; hello?: string }>()
+      const o1 = c.set({ id: 1 })
       const o2 = c.create({ hello: 'world' })
       expect(o2.hello).to.equal('world')
     })
 
     it('adds multiple', () => {
-      const c = collection<{ id: number, hello?: string }>()
-      const o1 = c.set({id: 1})
+      const c = collection<{ id: number; hello?: string }>()
+      const o1 = c.set({ id: 1 })
       const [o2, o3] = c.create([
         { hello: 'world' },
         { id: 3, hello: 'libx' }
@@ -126,7 +123,7 @@ describe('collection', () => {
 
   describe('#add', () => {
     it('adds a single or multiple models', () => {
-      const c = collection<{ id: number}>()
+      const c = collection<{ id: number }>()
       c.add({ id: 1 })
       expect(c.length).to.equal(1)
       c.add([{ id: 2 }, { id: 3 }])
@@ -134,7 +131,7 @@ describe('collection', () => {
     })
 
     it('does not add duplicate instances', () => {
-      const c = collection<{ id: number}>()
+      const c = collection<{ id: number }>()
       const item1 = { id: 1 }
       c.add(item1)
       expect(c.length).to.equal(1)
@@ -148,8 +145,8 @@ describe('collection', () => {
 
   describe('#get', () => {
     it('returns objects based on default resolution strategy (id lookup)', () => {
-      const c = collection<{ id: number}>()
-      const setted = c.set({ id: 1})
+      const c = collection<{ id: number }>()
+      const setted = c.set({ id: 1 })
       const getted = c.get('1')
       expect(getted).to.equal(setted)
     })
@@ -157,7 +154,7 @@ describe('collection', () => {
     it('returns undefined when not found', () => {
       const c = collection<{ id: number }>()
       c.set([{ id: 1 }])
-      c.add({ } as any)
+      c.add({} as any)
       expect(c.get(2)).to.equal(undefined)
     })
 
@@ -168,10 +165,10 @@ describe('collection', () => {
     })
 
     it('can get multiple items', () => {
-      const c = collection<{ id: number}>()
+      const c = collection<{ id: number }>()
       c.set({ id: 1 })
       c.set({ id: 2 })
-      const result = c.get(<any[]> [1, 2, 3])
+      const result = c.get(<any[]>[1, 2, 3])
       expect(result.length).to.equal(3)
       expect(result[0]!.id).to.equal(1)
       expect(result[1]!.id).to.equal(2)
@@ -191,7 +188,7 @@ describe('collection', () => {
       const c = collection<IModel>({
         create: (data: IData) => ({ identifier: parseInt(data._id, 10) }),
         getDataId: (input: IData) => input._id,
-        getModelId: (input) => input.identifier
+        getModelId: input => input.identifier
       })
 
       const result = c.set({ _id: '1' })
@@ -210,11 +207,24 @@ describe('collection', () => {
 
       expect(() => c.set({ id: 2 })).to.throw(TypeError, /null.*ID/i)
 
-      c = collection<{ id: number}>({
+      c = collection<{ id: number }>({
         getDataId: () => undefined
       })
 
       expect(c.set({ id: 2 })).to.be.undefined
+    })
+
+    it('clears the ID cache', () => {
+      const c = collection<{ id: number }>({ idAttribute: null! })
+      c.set({ id: 1 })
+      c.set({ id: 2 })
+
+      const got = c.get(1)
+      expect(got!.id).to.equal(1)
+
+      c.remove('1')
+      expect(c.get('1')).to.be.undefined
+      expect(c.get('2')).not.to.be.undefined
     })
   })
 
@@ -235,19 +245,23 @@ describe('collection', () => {
     let c: ICollection<Value>
     beforeEach(() => {
       c = collection<Value>()
-      c.set([{
-        id: 1,
-        name: 'Jeff',
-        gender: 'male'
-      }, {
-        id: 2,
-        name: 'Amanda',
-        gender: 'female'
-      }, {
-        id: 3,
-        name: 'Will',
-        gender: 'male'
-      }])
+      c.set([
+        {
+          id: 1,
+          name: 'Jeff',
+          gender: 'male'
+        },
+        {
+          id: 2,
+          name: 'Amanda',
+          gender: 'female'
+        },
+        {
+          id: 3,
+          name: 'Will',
+          gender: 'male'
+        }
+      ])
     })
 
     it('#map', () => {
@@ -313,14 +327,17 @@ describe('collection', () => {
   })
 
   describe('#remove', () => {
-    let c: ICollection<{id: number}>
+    let c: ICollection<{ id: number }>
     beforeEach(() => {
-      c = collection<{id: number}>()
-      c.set([{
-        id: 1
-      }, {
-        id: 2
-      }])
+      c = collection<{ id: number }>()
+      c.set([
+        {
+          id: 1
+        },
+        {
+          id: 2
+        }
+      ])
     })
 
     it('removes by id', () => {

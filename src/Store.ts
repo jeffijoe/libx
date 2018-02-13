@@ -1,7 +1,8 @@
 import { collection, ICollection, ICollectionOptions } from './collection'
 import { IObjectHash, Model } from './Model'
 
-export interface IModelCollectionOptions<T extends Model> extends ICollectionOptions<T> {
+export interface IModelCollectionOptions<T extends Model>
+  extends ICollectionOptions<T> {
   idAttribute?: string
   rootStore?: any
   model?: any
@@ -33,33 +34,37 @@ export class Store implements IStore {
   /**
    * Constructor.
    */
-  constructor (opts: IStoreOpts) {
+  constructor(opts: IStoreOpts) {
     this.rootStore = opts.rootStore
   }
 
   /**
    * Creates a collection that gets the root store passed in.
    */
-  collection <TModel extends Model> (opts: IModelCollectionOptions<TModel>): ICollection<TModel> {
+  collection<TModel extends Model>(
+    opts: IModelCollectionOptions<TModel>
+  ): ICollection<TModel> {
     return collection({
       rootStore: this.rootStore,
       create: (
         attributes: IObjectHash,
         options: IModelCollectionOptions<TModel>
-      ) => new opts.model(attributes, {
-        stripUndefined: true,
-        parse: true,
-        ...options
-      }),
+      ) =>
+        new opts.model(attributes, {
+          stripUndefined: true,
+          parse: true,
+          ...options
+        }),
       update: (
         existing: TModel,
         input: IObjectHash,
         options: IModelCollectionOptions<TModel>
-      ) => existing.set(input, {
-        stripUndefined: true,
-        parse: true,
-        ...options
-      } as any),
+      ) =>
+        existing.set(input, {
+          stripUndefined: true,
+          parse: true,
+          ...options
+        } as any),
       ...opts
     } as IModelCollectionOptions<TModel>)
   }

@@ -31,34 +31,34 @@ export interface ICollection<T> {
   /**
    * Adds one or more models to the end of the collection.
    */
-  add (models: T | T[]): this
+  add(models: T | T[]): this
   /**
    * Multi-version of `create`.
    */
-  create (data: IObjectLike[], createOpts?: ICollectionOptions<T>): T[]
+  create(data: IObjectLike[], createOpts?: ICollectionOptions<T>): T[]
   /**
    * Like `set`, but will add regardless of whether an id is present or not.
    * This has the added risk of resulting multiple model instances if you don't make sure
    * to update the existing model once you do have an id. The model id is what makes the whole
    * one-instance-per-entity work.
    */
-  create (data: IObjectLike, createOpts?: ICollectionOptions<T>): T
+  create(data: IObjectLike, createOpts?: ICollectionOptions<T>): T
   /**
    * Gets items by ids.
    */
-  get (id: any[]): Array<T | undefined>
+  get(id: any[]): Array<T | undefined>
   /**
    * Gets a item by id.
    */
-  get (id: any): T | undefined
+  get(id: any): T | undefined
   /**
    * Same as the singular version, but with multiple.
    */
-  set (data?: IObjectLike[], setOpts?: ICollectionOptions<T>): T[] | undefined
+  set(data?: IObjectLike[], setOpts?: ICollectionOptions<T>): T[] | undefined
   /**
    * Adds a single item and maps it using the mapper in the options.
    */
-  set (data?: IObjectLike, setOpts?: ICollectionOptions<T>): T | undefined
+  set(data?: IObjectLike, setOpts?: ICollectionOptions<T>): T | undefined
   /**
    * Clears the collection.
    */
@@ -66,62 +66,64 @@ export interface ICollection<T> {
   /**
    * Maps over the items.
    */
-  map<M> (iteratee: IIteratee<T, M>): M[]
+  map<M>(iteratee: IIteratee<T, M>): M[]
   /**
    * Filters the items.
    */
-  filter (iteratee: IIteratee<T, boolean>): T[]
+  filter(iteratee: IIteratee<T, boolean>): T[]
   /**
    * Determines if there are any items that match the predicate.
    */
-  some (iteratee: IIteratee<T, boolean>): boolean
+  some(iteratee: IIteratee<T, boolean>): boolean
   /**
    * Determines if all items match the predicate.
    */
-  every (iteratee: IIteratee<T, boolean>): boolean
+  every(iteratee: IIteratee<T, boolean>): boolean
   /**
    * Chunks the collection.
    */
-  chunk (size?: number): Array<Array<T>>
+  chunk(size?: number): Array<Array<T>>
   /**
    * Reduces on the items.
    */
-  reduce <R>(iteratee: IIteratee<T, R>, seed?: R): R
+  reduce<R>(iteratee: IIteratee<T, R>, seed?: R): R
   /**
    * Finds a particular item.
    */
-  find (iteratee: IIteratee<T, boolean>): T | undefined
+  find(iteratee: IIteratee<T, boolean>): T | undefined
   /**
    * Orders the items based on iteratees and orders.
    */
-  orderBy (iteratees: Array<IIteratee<T, any>|Object|string>, orders?: Array<boolean|string>): T[]
+  orderBy(
+    iteratees: Array<IIteratee<T, any> | Object | string>,
+    orders?: Array<boolean | string>
+  ): T[]
   /**
    * Removes an item based on ID or the item itself.
    */
-  remove (modelOrId: T | string): this
+  remove(modelOrId: T | string): this
   /**
    * Slices the array.
    */
-  slice (start?: number, end?: number): T[]
+  slice(start?: number, end?: number): T[]
   /**
    * Moves an item from one index to another, using MobX's `move`.
    */
-  move (fromIndex: number, toIndex: number): this
+  move(fromIndex: number, toIndex: number): this
   /**
    * Returns the item at the specified index.
    */
-  at (index: number): T | undefined
+  at(index: number): T | undefined
   /**
    * Runs a `forEach` over the items and returns the collection.
    */
-  forEach (iteratee: IIteratee<T, any>): this
+  forEach(iteratee: IIteratee<T, any>): this
 }
 
 /**
  * Any object-like.. object.
  */
-export interface IObjectLike {
-}
+export interface IObjectLike {}
 
 /**
  * Called when the collection wants to add a new item.
@@ -170,7 +172,7 @@ export interface ICollectionOptions<T> {
    * Used to get an ID from input data, used to determine whether to create
    * or update.
    */
-  getDataId?: IGetId<IObjectLike>
+  getDataId?: IGetId<any>
 }
 
 /**
@@ -192,12 +194,11 @@ export type ModelId = string | number | Date
  * @type {T} The item type.
  * @type {O} Additional options.
  */
-export function collection<T> (
-  opts?: ICollectionOptions<T>
-): ICollection<T> {
+export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
   opts = Object.assign({}, defaults, opts)
   // Holds the actual items.
   const items: IObservableArray<T> = observable.shallowArray([])
+  const idMap = new Map<string, T>()
 
   const self = {
     items,
@@ -222,20 +223,32 @@ export function collection<T> (
     at: (index: number) => items[index],
     slice,
     move,
-    get length () {
+    get length() {
       return items.length
     }
   }
 
-  function get (id: ModelId[]): Array<T | undefined>
-  function get (id: ModelId): T | undefined
-  function get (id: ModelId | ModelId[]): (T | undefined) | Array<T | undefined> {
+  function get(id: ModelId[]): Array<T | undefined>
+  function get(id: ModelId): T | undefined
+  function get(
+    id: ModelId | ModelId[]
+  ): (T | undefined) | Array<T | undefined> {
+    /*tslint:disable-next-line*/
     if (id === undefined || id === null) {
       return undefined
     }
 
+    if (Array.isArray(id)) {
+      return id.map(get) as T[]
+    }
+
     const idAsString: string = id.toString()
-    return Array.isArray(id) ? id.map(get) as T[] : items.find((item) => {
+    const fromMap = idMap.get(idAsString)
+    if (fromMap) {
+      return fromMap
+    }
+
+    const found = items.find(item => {
       const modelId = opts!.getModelId!(item, opts!)
       if (!modelId) {
         return false
@@ -243,18 +256,33 @@ export function collection<T> (
 
       return modelId.toString() === idAsString
     })
+
+    if (found !== undefined) {
+      idMap.set(idAsString, found)
+    }
+
+    return found
   }
 
-  function set (data?: IObjectLike[], setOpts?: ICollectionOptions<T>): T[] | undefined
-  function set (data?: IObjectLike, setOpts?: ICollectionOptions<T>): T | undefined
-  function set (data?: IObjectLike | IObjectLike[], setOpts?: ICollectionOptions<T>): T | T[] | undefined {
+  function set(
+    data?: IObjectLike[],
+    setOpts?: ICollectionOptions<T>
+  ): T[] | undefined
+  function set(
+    data?: IObjectLike,
+    setOpts?: ICollectionOptions<T>
+  ): T | undefined
+  function set(
+    data?: IObjectLike | IObjectLike[],
+    setOpts?: ICollectionOptions<T>
+  ): T | T[] | undefined {
     setOpts = Object.assign({}, opts as any, setOpts)
     if (!data) {
       return undefined
     }
 
     if (Array.isArray(data)) {
-      return data.map((d) => set(d as IObjectLike, setOpts) as T) as T[]
+      return data.map(d => set(d, setOpts) as T)
     }
 
     let dataId = opts!.getDataId!(data, setOpts!)
@@ -285,12 +313,16 @@ export function collection<T> (
     }
 
     items.push(created)
+    idMap.set(dataId, created)
     return created
   }
 
-  function create (data: IObjectLike[], createOpts?: ICollectionOptions<T>): T[]
-  function create (data: IObjectLike, createOpts?: ICollectionOptions<T>): T
-  function create (data: IObjectLike | IObjectLike[], createOpts?: ICollectionOptions<T>): T | T[] {
+  function create(data: IObjectLike[], createOpts?: ICollectionOptions<T>): T[]
+  function create(data: IObjectLike, createOpts?: ICollectionOptions<T>): T
+  function create(
+    data: IObjectLike | IObjectLike[],
+    createOpts?: ICollectionOptions<T>
+  ): T | T[] {
     if (Array.isArray(data)) {
       return data.map(d => create(d, createOpts))
     }
@@ -306,38 +338,50 @@ export function collection<T> (
     return created
   }
 
-  function add (models: T | T[]): ICollection<T> {
+  function add(models: T | T[]): ICollection<T> {
     if (!Array.isArray(models)) {
       return add([models])
     }
 
     // Filter out existing models.
-    models = models.filter((x) => items.indexOf(x) === -1)
+    models = models.filter(x => items.indexOf(x) === -1)
     items.push(...models)
     return self
   }
 
-  function remove (modelOrId: T | ModelId): ICollection<T> {
-    const model = (typeof modelOrId === 'string' || typeof modelOrId === 'number' || modelOrId instanceof Date)
-      ? get(modelOrId)
-      : modelOrId
+  function remove(modelOrId: T | ModelId): ICollection<T> {
+    const model =
+      typeof modelOrId === 'string' ||
+      typeof modelOrId === 'number' ||
+      modelOrId instanceof Date
+        ? get(modelOrId)
+        : modelOrId
     if (!model) {
       return self
     }
+
     items.remove(model)
+
+    const modelId = opts!.getModelId!(model, opts!)
+    /* istanbul ignore else */
+    if (modelId !== null && modelId !== undefined) {
+      idMap.delete(modelId.toString())
+    }
+
     return self
   }
 
-  function clear (): ICollection<T> {
+  function clear(): ICollection<T> {
     items.clear()
+    idMap.clear()
     return self
   }
 
-  function slice (start?: number, end?: number) {
+  function slice(start?: number, end?: number) {
     return items.slice(start, end)
   }
 
-  function move (fromIndex: number, toIndex: number) {
+  function move(fromIndex: number, toIndex: number) {
     items.move(fromIndex, toIndex)
     return self
   }
@@ -348,6 +392,6 @@ export function collection<T> (
 /**
  * Utility for binding lodash functions.
  */
-function bindLodashFunc (items: IObservableArray<any>, func: any): any {
+function bindLodashFunc(items: IObservableArray<any>, func: any): any {
   return (...args: any[]) => func(items, ...args)
 }
