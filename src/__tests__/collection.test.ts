@@ -1,12 +1,10 @@
-import { expect } from 'chai'
-import { collection, Model, ICollection } from '../src'
-import { IObjectLike } from '../src/collection'
+import { collection, Model, ICollection } from '..'
 
 describe('collection', () => {
   it('can be created', () => {
     const c = collection<{}>()
-    expect(c).to.exist
-    expect(c.items).to.exist
+    expect(c).toBeDefined()
+    expect(c.items).toBeDefined()
   })
 
   describe('#set', () => {
@@ -17,49 +15,33 @@ describe('collection', () => {
       })
       const result = c.set({ id: 1 })
       const result2 = c.set({ id: 1, top: 'kek' })
-      expect(result).to.be.an.instanceOf(Model)
-      expect(result2).to.be.an.instanceOf(Model)
-      expect(result).to.equal(result2)
+      expect(result).toBeInstanceOf(Model)
+      expect(result2).toBeInstanceOf(Model)
+      expect(result).toBe(result2)
     })
 
     it('returns undefined when passed undefined', () => {
       const c = collection<Model>()
-      expect(c.set()).to.equal(undefined)
+      expect(c.set()).toBe(undefined)
     })
 
     it('defaults to "id" for id attribute', () => {
       const c = collection<Model>({ idAttribute: '' })
       c.set({ id: 1 })
-      expect(c.get(1)).to.be.ok
+      expect(c.get(1)).toBeDefined()
     })
 
     it('supports adding multiple', () => {
-      const c = collection<Model>()
+      const c = collection<{ id: number }>()
       const a = c.set([{ id: 1 }, { id: 2 }])
       const m1 = a![0]
       const m2 = a![1]
-      expect(m1.id).to.equal(1)
-      expect(m2.id).to.equal(2)
+      expect(m1.id).toBe(1)
+      expect(m2.id).toBe(2)
     })
 
     describe('circular reference parsing', () => {
       it('only adds one', () => {
-        function parseParent({ child, ...data }: any) {
-          child = c2.set(child)
-          return {
-            ...data,
-            child
-          }
-        }
-
-        function parseChild({ parent, ...data }: any) {
-          parent = c1.set(parent)
-          return {
-            ...data,
-            parent
-          }
-        }
-
         const c1 = collection<any>({
           create: data => parseParent(data),
           update: (existing, data) => Object.assign(existing, parseParent(data))
@@ -84,12 +66,28 @@ describe('collection', () => {
 
         const parent = c1.set(data)
         const child = c2.get('c1')
-        expect(c1.length).to.equal(1)
-        expect(c2.length).to.equal(1)
-        expect(parent.prop1).to.equal('hello')
-        expect(parent.prop2).to.equal('world')
-        expect(parent.child).to.equal(child)
-        expect(child.parent).to.equal(parent)
+        expect(c1.length).toBe(1)
+        expect(c2.length).toBe(1)
+        expect(parent.prop1).toBe('hello')
+        expect(parent.prop2).toBe('world')
+        expect(parent.child).toBe(child)
+        expect(child.parent).toBe(parent)
+
+        function parseParent({ child, ...data }: any) {
+          child = c2.set(child)
+          return {
+            ...data,
+            child
+          }
+        }
+
+        function parseChild({ parent, ...data }: any) {
+          parent = c1.set(parent)
+          return {
+            ...data,
+            parent
+          }
+        }
       })
     })
   })
@@ -99,25 +97,26 @@ describe('collection', () => {
       const c = collection<{ id: number }>()
       const o1 = c.set({ id: 1 })
       const o2 = c.create({ id: 1 })
-      expect(o1).to.equal(o2)
+      expect(o1).toBe(o2)
     })
 
     it('adds the model even if it does not have an id', () => {
       const c = collection<{ id: number; hello?: string }>()
       const o1 = c.set({ id: 1 })
       const o2 = c.create({ hello: 'world' })
-      expect(o2.hello).to.equal('world')
+      expect(o2.hello).toBe('world')
+      expect(o2).not.toBe(o1)
     })
 
     it('adds multiple', () => {
       const c = collection<{ id: number; hello?: string }>()
-      const o1 = c.set({ id: 1 })
+      c.set({ id: 1 })
       const [o2, o3] = c.create([
         { hello: 'world' },
         { id: 3, hello: 'libx' }
-      ] as IObjectLike[])
-      expect(o2.hello).to.equal('world')
-      expect(o3.id).to.equal(3)
+      ] as any[])
+      expect(o2.hello).toBe('world')
+      expect(o3.id).toBe(3)
     })
   })
 
@@ -125,21 +124,21 @@ describe('collection', () => {
     it('adds a single or multiple models', () => {
       const c = collection<{ id: number }>()
       c.add({ id: 1 })
-      expect(c.length).to.equal(1)
+      expect(c.length).toBe(1)
       c.add([{ id: 2 }, { id: 3 }])
-      expect(c.length).to.equal(3)
+      expect(c.length).toBe(3)
     })
 
     it('does not add duplicate instances', () => {
       const c = collection<{ id: number }>()
       const item1 = { id: 1 }
       c.add(item1)
-      expect(c.length).to.equal(1)
-      expect(item1).to.equal(c.get(1))
+      expect(c.length).toBe(1)
+      expect(item1).toBe(c.get(1))
       c.add(item1)
-      expect(c.length).to.equal(1)
+      expect(c.length).toBe(1)
       c.add([item1, { id: 2 }])
-      expect(c.length).to.equal(2)
+      expect(c.length).toBe(2)
     })
   })
 
@@ -148,31 +147,31 @@ describe('collection', () => {
       const c = collection<{ id: number }>()
       const setted = c.set({ id: 1 })
       const getted = c.get('1')
-      expect(getted).to.equal(setted)
+      expect(getted).toBe(setted)
     })
 
     it('returns undefined when not found', () => {
       const c = collection<{ id: number }>()
       c.set([{ id: 1 }])
       c.add({} as any)
-      expect(c.get(2)).to.equal(undefined)
+      expect(c.get(2)).toBe(undefined)
     })
 
     it('returns undefined when passed undefined or null', () => {
       const c = collection<Model>()
-      expect(c.get(undefined)).to.equal(undefined)
-      expect(c.get(null)).to.equal(undefined)
+      expect(c.get(undefined)).toBe(undefined)
+      expect(c.get(null)).toBe(undefined)
     })
 
     it('can get multiple items', () => {
       const c = collection<{ id: number }>()
       c.set({ id: 1 })
       c.set({ id: 2 })
-      const result = c.get(<any[]>[1, 2, 3])
-      expect(result.length).to.equal(3)
-      expect(result[0]!.id).to.equal(1)
-      expect(result[1]!.id).to.equal(2)
-      expect(result[2]).to.equal(undefined)
+      const result = c.get([1, 2, 3] as any[])
+      expect(result.length).toBe(3)
+      expect(result[0]!.id).toBe(1)
+      expect(result[1]!.id).toBe(2)
+      expect(result[2]).toBe(undefined)
     })
 
     it('supports overriding how ID resolution is done on both ends', () => {
@@ -188,16 +187,16 @@ describe('collection', () => {
       const c = collection<IModel>({
         create: (data: IData) => ({ identifier: parseInt(data._id, 10) }),
         getDataId: (input: IData) => input._id,
-        getModelId: input => input.identifier
+        getModelId: (input: IModel) => input.identifier
       })
 
       const result = c.set({ _id: '1' })
       const result2 = c.set({ _id: '1', top: 'kek' })
-      expect(result!.identifier).to.equal(1)
-      expect(result2!.identifier).to.equal(1)
-      expect(result).to.equal(result2)
-      expect(result!.top).to.equal('kek')
-      expect(result2!.top).to.equal('kek')
+      expect(result!.identifier).toBe(1)
+      expect(result2!.identifier).toBe(1)
+      expect(result).toBe(result2)
+      expect(result!.top).toBe('kek')
+      expect(result2!.top).toBe('kek')
     })
 
     it('throws when an invalid ID is returned from the data', () => {
@@ -205,13 +204,13 @@ describe('collection', () => {
         getDataId: () => null
       })
 
-      expect(() => c.set({ id: 2 })).to.throw(TypeError, /null.*ID/i)
+      expect(() => c.set({ id: 2 })).toThrow(/null.*ID/i)
 
       c = collection<{ id: number }>({
         getDataId: () => undefined
       })
 
-      expect(c.set({ id: 2 })).to.be.undefined
+      expect(c.set({ id: 2 })).toBeUndefined()
     })
 
     it('clears the ID cache', () => {
@@ -220,11 +219,11 @@ describe('collection', () => {
       c.set({ id: 2 })
 
       const got = c.get(1)
-      expect(got!.id).to.equal(1)
+      expect(got!.id).toBe(1)
 
       c.remove('1')
-      expect(c.get('1')).to.be.undefined
-      expect(c.get('2')).not.to.be.undefined
+      expect(c.get('1')).toBeUndefined()
+      expect(c.get('2')).not.toBeUndefined()
     })
   })
 
@@ -234,9 +233,9 @@ describe('collection', () => {
       const c: ICollection<Value> = collection<Value>()
       c.set([{ id: 1 }, { id: 2 }, { id: 3 }])
       c.move(0, 2)
-      expect(c.items[0].id).to.equal(2)
-      expect(c.items[1].id).to.equal(3)
-      expect(c.items[2].id).to.equal(1)
+      expect(c.items[0].id).toBe(2)
+      expect(c.items[1].id).toBe(3)
+      expect(c.items[2].id).toBe(1)
     })
   })
 
@@ -266,36 +265,36 @@ describe('collection', () => {
 
     it('#map', () => {
       const mapped = c.map(x => x.name)
-      expect(mapped).to.deep.equal(['Jeff', 'Amanda', 'Will'])
+      expect(mapped).toEqual(['Jeff', 'Amanda', 'Will'])
     })
 
     it('#filter', () => {
       const male = c.filter(x => x.gender === 'male')
-      expect(male.length).to.equal(2)
-      expect(male[0].id).to.equal(1)
-      expect(male[1].id).to.equal(3)
+      expect(male.length).toBe(2)
+      expect(male[0].id).toBe(1)
+      expect(male[1].id).toBe(3)
     })
 
     it('#find', () => {
       const jeff = c.find(x => x.name === 'Jeff')
-      expect(jeff).to.exist
-      expect(jeff!.id).to.equal(1)
+      expect(jeff).toBeDefined()
+      expect(jeff!.id).toBe(1)
     })
 
     it('#slice', () => {
-      expect(c.slice(0, 1).length).to.equal(1)
+      expect(c.slice(0, 1).length).toBe(1)
     })
 
     it('#orderBy', () => {
       let ordered = c.orderBy(['name'], ['asc'])
-      expect(ordered[0].name).to.equal('Amanda')
-      expect(ordered[1].name).to.equal('Jeff')
-      expect(ordered[2].name).to.equal('Will')
+      expect(ordered[0].name).toBe('Amanda')
+      expect(ordered[1].name).toBe('Jeff')
+      expect(ordered[2].name).toBe('Will')
 
       ordered = c.orderBy(['name'], ['desc'])
-      expect(ordered[0].name).to.equal('Will')
-      expect(ordered[1].name).to.equal('Jeff')
-      expect(ordered[2].name).to.equal('Amanda')
+      expect(ordered[0].name).toBe('Will')
+      expect(ordered[1].name).toBe('Jeff')
+      expect(ordered[2].name).toBe('Amanda')
     })
 
     it('#forEach', () => {
@@ -306,13 +305,13 @@ describe('collection', () => {
         touchedIndexes.push(index)
       })
 
-      expect(touchedValues).to.deep.equal(c.slice())
-      expect(touchedIndexes).to.deep.equal(c.map((x, i) => i))
+      expect(touchedValues).toEqual(c.slice())
+      expect(touchedIndexes).toEqual(c.map((x, i) => i))
     })
 
     it('#at', () => {
-      expect(c.at(0)).to.equal(c.items[0])
-      expect(c.at(1)).to.equal(c.items[1])
+      expect(c.at(0)).toBe(c.items[0])
+      expect(c.at(1)).toBe(c.items[1])
     })
   })
 
@@ -320,9 +319,9 @@ describe('collection', () => {
     it('clears the collection', () => {
       const c = collection<{ id: number }>()
       c.set([{ id: 1 }, { id: 2 }])
-      expect(c.length).to.equal(2)
+      expect(c.length).toBe(2)
       c.clear()
-      expect(c.length).to.equal(0)
+      expect(c.length).toBe(0)
     })
   })
 
@@ -341,21 +340,21 @@ describe('collection', () => {
     })
 
     it('removes by id', () => {
-      expect(c.length).to.equal(2)
+      expect(c.length).toBe(2)
       c.remove('1')
-      expect(c.length).to.equal(1)
-      expect(c.get(2)).to.deep.equal({ id: 2 })
+      expect(c.length).toBe(1)
+      expect(c.get(2)).toEqual({ id: 2 })
     })
 
     it('removes with a model reference', () => {
-      expect(c.length).to.equal(2)
+      expect(c.length).toBe(2)
       c.remove(c.get(1)!)
-      expect(c.length).to.equal(1)
-      expect(c.get(2)).to.deep.equal({ id: 2 })
+      expect(c.length).toBe(1)
+      expect(c.get(2)).toEqual({ id: 2 })
     })
 
     it('returns self even when not removing anything', () => {
-      expect(c.remove('1234')).to.equal(c)
+      expect(c.remove('1234')).toBe(c)
     })
   })
 

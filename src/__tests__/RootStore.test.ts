@@ -1,7 +1,5 @@
-import { spy } from 'sinon'
-import { createRootStore } from '../src/rootStore'
-import { expect } from 'chai'
-import { Store } from '../src/Store'
+import { createRootStore } from '../rootStore'
+import { Store } from '../Store'
 
 class Store1 extends Store {}
 
@@ -9,7 +7,7 @@ class Store2 extends Store {}
 
 describe('createRootStore', () => {
   it('creates an object that injects itself to values passed in', () => {
-    const spy1 = spy()
+    const spy1 = jest.fn()
     const rootStore = createRootStore<{
       store1: Store1
       store2: Store2
@@ -21,18 +19,18 @@ describe('createRootStore', () => {
       func1: spy1
     })
 
-    expect(rootStore.store1).to.be.instanceOf(Store1)
-    expect(rootStore.store2).to.be.instanceOf(Store2)
-    expect(rootStore.val1).to.equal(123)
-    const call1 = spy1.getCall(0).args[0]
-    expect(call1.rootStore).to.equal(rootStore)
+    expect(rootStore.store1).toBeInstanceOf(Store1)
+    expect(rootStore.store2).toBeInstanceOf(Store2)
+    expect(rootStore.val1).toBe(123)
+    const call1 = spy1.mock.calls[0][0]
+    expect(call1.rootStore).toBe(rootStore)
   })
 
   it('lets me customize the factory', () => {
-    const factory = spy(
+    const factory = jest.fn(
       (storeClass, rootStore) => new storeClass({ rootStore })
     )
-    const spy1 = spy()
+    const spy1 = jest.fn()
     const rootStore = createRootStore<{
       store1: Store1
       store2: Store2
@@ -47,11 +45,11 @@ describe('createRootStore', () => {
       factory
     )
 
-    expect(rootStore.store1).to.be.instanceOf(Store1)
-    expect(rootStore.store2).to.be.instanceOf(Store2)
-    expect(rootStore.val1).to.equal(123)
-    const call1 = spy1.getCall(0).args[0]
-    expect(call1.rootStore).to.equal(rootStore)
-    expect(factory.callCount).to.equal(3)
+    expect(rootStore.store1).toBeInstanceOf(Store1)
+    expect(rootStore.store2).toBeInstanceOf(Store2)
+    expect(rootStore.val1).toBe(123)
+    const call1 = spy1.mock.calls[0][0]
+    expect(call1.rootStore).toBe(rootStore)
+    expect(factory.mock.calls.length).toBe(3)
   })
 })

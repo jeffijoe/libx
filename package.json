@@ -8,17 +8,16 @@
     "node": ">=4.0.0"
   },
   "scripts": {
-    "build": "rimraf lib && tsc -p src",
-    "test":
-      "rimraf .test-out && tsc --skipLibCheck -p test && mocha .test-out/test/**/*.spec.js --require .test-out/test/index.js",
+    "build": "rimraf lib && tsc -p tsconfig.build.json",
+    "test": "jest",
     "test:watch": "nodemon -e js,ts --exec npm run test",
-    "check":
-      "tsc -p src/tsconfig.json --noEmit --pretty && tsc -p test/tsconfig.json --noEmit --pretty",
+    "check": "tsc -p tsconfig.json --noEmit --pretty",
     "lint":
-      "npm run check && tslint --project src/tsconfig.json --fix \"{src,test,examples}/**/*.ts\" && prettier --write \"{src,test,examples}/**/*.{ts,js}\"",
+      "npm run check && tslint --project tsconfig.json --fix \"src/**/*.ts\" && prettier --write \"{src,examples}/**/*.{ts,js}\"",
     "lint:watch": "nodemon --exec npm run lint",
-    "cover": "nyc npm test",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "cover": "npm test -- --coverage",
+    "coveralls":
+      "npm run cover && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "precommit": "lint-staged",
     "publish:pre": "npm run lint && npm run build && npm run cover",
     "publish:post": "npm publish && git push --follow-tags",
@@ -51,23 +50,23 @@
   },
   "homepage": "https://github.com/jeffijoe/libx#readme",
   "devDependencies": {
-    "@types/chai": "^4.1.2",
-    "@types/mocha": "^2.2.48",
+    "@types/jest": "^22.1.2",
+    "@types/lodash": "^4.14.102",
     "@types/node": "^9.4.5",
-    "@types/sinon-chai": "^2.7.29",
+    "@types/prettier": "^1.10.0",
+    "@types/rimraf": "^2.0.2",
     "chai": "^4.1.2",
     "coveralls": "^3.0.0",
     "husky": "^0.14.3",
+    "jest": "^22.3.0",
     "lint-staged": "^6.1.0",
     "lodash": "^4.17.5",
     "mobx": "^3.5.1",
     "mocha": "^5.0.0",
     "nodemon": "^1.14.12",
-    "nyc": "^11.4.1",
     "prettier": "^1.10.2",
     "rimraf": "^2.6.2",
-    "sinon": "^4.3.0",
-    "sinon-chai": "^2.14.0",
+    "ts-jest": "^22.0.4",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.7.0",
     "tslint-config-standard": "^7.0.0",
@@ -80,5 +79,17 @@
   "dependencies": {},
   "lint-staged": {
     "*.ts": ["prettier --write", "git add"]
+  },
+  "jest": {
+    "mapCoverage": true,
+    "testRegex": "(/__tests__/.*\\.(test|spec))\\.(ts|tsx|js)$",
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": ["/node_modules/", "__tests__"],
+    "testPathIgnorePatterns": ["<rootDir>/lib"],
+    "transform": {
+      "^.+\\.(j|t)sx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": ["<rootDir>/node_modules/(?!lodash-es/.*)"],
+    "moduleFileExtensions": ["ts", "tsx", "js"]
   }
 }

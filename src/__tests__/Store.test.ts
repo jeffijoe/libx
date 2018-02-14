@@ -1,7 +1,6 @@
-import { IStoreOpts, Store } from '../src/Store'
-import { ICollection } from '../src/collection'
-import { Model, model } from '../src/Model'
-import { expect } from 'chai'
+import { IStoreOpts, Store } from '../Store'
+import { ICollection } from '../collection'
+import { Model, model } from '../Model'
 
 class RootStore {}
 
@@ -27,7 +26,7 @@ class TestStore extends Store {
   }
 }
 
-function OtherStuff(attrs, opts) {
+function OtherStuff(attrs: any, opts: any) {
   return model().set(attrs, opts)
 }
 
@@ -40,13 +39,13 @@ describe('Store', function() {
       })
 
       const stuff1 = store.stuffs.set({ id: 1 })
-      expect(stuff1).to.be.instanceOf(Stuff)
-      expect(stuff1!.id).to.equal(1)
-      expect(stuff1!.rootStore).to.equal(rootStore)
+      expect(stuff1).toBeInstanceOf(Stuff)
+      expect(stuff1!.id).toBe(1)
+      expect(stuff1!.rootStore).toBe(rootStore)
 
       const stuff1Updated = store.stuffs.set({ id: 1, hello: 'world' })
-      expect(stuff1Updated).to.equal(stuff1)
-      expect(stuff1!.hello).to.equal('world')
+      expect(stuff1Updated).toBe(stuff1)
+      expect(stuff1!.hello).toBe('world')
     })
 
     it('works with model builder', () => {
@@ -56,11 +55,11 @@ describe('Store', function() {
       })
 
       const stuff1 = store.otherStuffs.set({ id: 1 })
-      expect(stuff1!.id).to.equal(1)
+      expect(stuff1.id).toBe(1)
 
       const stuff1Updated = store.otherStuffs.set({ id: 1, hello: 'world' })
-      expect(stuff1Updated).to.equal(stuff1)
-      expect(stuff1!.hello).to.equal('world')
+      expect(stuff1Updated).toBe(stuff1)
+      expect(stuff1.hello).toBe('world')
     })
   })
 })

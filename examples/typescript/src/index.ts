@@ -42,7 +42,7 @@ class TodoStore extends Store {
 
   fetchTodos() {
     // Fetch the todos, then load them into the collection.
-    return API.getTodos().then(this.todos.set)
+    return API.getTodos().then<Todo[]>(this.todos.set)
   }
 }
 

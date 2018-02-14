@@ -2,7 +2,7 @@ export class API {
   // Use your imagination..
   static getTodos() {
     // GET /api/todos ...
-    return Promise.resolve([
+    return Promise.resolve<any[]>([
       {
         id: 'abcd123',
         text: 'Install MobX',

@@ -35,14 +35,14 @@ export interface ICollection<T> {
   /**
    * Multi-version of `create`.
    */
-  create(data: IObjectLike[], createOpts?: ICollectionOptions<T>): T[]
+  create(data: any[], createOpts?: ICollectionOptions<T>): T[]
   /**
    * Like `set`, but will add regardless of whether an id is present or not.
    * This has the added risk of resulting multiple model instances if you don't make sure
    * to update the existing model once you do have an id. The model id is what makes the whole
    * one-instance-per-entity work.
    */
-  create(data: IObjectLike, createOpts?: ICollectionOptions<T>): T
+  create(data: any, createOpts?: ICollectionOptions<T>): T
   /**
    * Gets items by ids.
    */
@@ -54,11 +54,11 @@ export interface ICollection<T> {
   /**
    * Same as the singular version, but with multiple.
    */
-  set(data?: IObjectLike[], setOpts?: ICollectionOptions<T>): T[] | undefined
+  set(data?: any[], setOpts?: ICollectionOptions<T>): T[] | undefined
   /**
    * Adds a single item and maps it using the mapper in the options.
    */
-  set(data?: IObjectLike, setOpts?: ICollectionOptions<T>): T | undefined
+  set(data?: any, setOpts?: ICollectionOptions<T>): T | undefined
   /**
    * Clears the collection.
    */
@@ -121,22 +121,17 @@ export interface ICollection<T> {
 }
 
 /**
- * Any object-like.. object.
- */
-export interface IObjectLike {}
-
-/**
  * Called when the collection wants to add a new item.
  */
 export interface ICreateFunc<T> {
-  (input: IObjectLike, opts: ICollectionOptions<T>): T
+  (input: any, opts: ICollectionOptions<T>): T
 }
 
 /**
  * Called when the collection wants to update an existing item.
  */
 export interface IUpdateFunc<T> {
-  (existing: T, input: IObjectLike, opts: ICollectionOptions<T>): T
+  (existing: T, input: any, opts: ICollectionOptions<T>): T
 }
 
 /**
@@ -264,16 +259,10 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
     return found
   }
 
+  function set(data?: any[], setOpts?: ICollectionOptions<T>): T[] | undefined
+  function set(data?: any, setOpts?: ICollectionOptions<T>): T | undefined
   function set(
-    data?: IObjectLike[],
-    setOpts?: ICollectionOptions<T>
-  ): T[] | undefined
-  function set(
-    data?: IObjectLike,
-    setOpts?: ICollectionOptions<T>
-  ): T | undefined
-  function set(
-    data?: IObjectLike | IObjectLike[],
+    data?: any | any[],
     setOpts?: ICollectionOptions<T>
   ): T | T[] | undefined {
     setOpts = Object.assign({}, opts as any, setOpts)
@@ -317,12 +306,12 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
     return created
   }
 
-  function create(data: IObjectLike[], createOpts?: ICollectionOptions<T>): T[]
-  function create(data: IObjectLike, createOpts?: ICollectionOptions<T>): T
+  function create(data: any[], createOpts?: ICollectionOptions<T>): T[]
+  function create(data: any, createOpts?: ICollectionOptions<T>): T
   function create(
-    data: IObjectLike | IObjectLike[],
+    data: any[] | any,
     createOpts?: ICollectionOptions<T>
-  ): T | T[] {
+  ): T[] | T {
     if (Array.isArray(data)) {
       return data.map(d => create(d, createOpts))
     }
@@ -330,7 +319,7 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
     createOpts = Object.assign({}, opts as any, createOpts)
     const dataId = createOpts!.getDataId!(data, createOpts!)
     if (dataId !== undefined && dataId !== null) {
-      return set(data as any, createOpts) as T[]
+      return set(data, createOpts) as any
     }
 
     const created = createOpts!.create!(data, createOpts!)
