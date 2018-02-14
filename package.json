@@ -1,6 +1,6 @@
 {
   "name": "libx",
-  "version": "0.3.0-alpha.1",
+  "version": "0.3.0-alpha.2",
   "description": "Collection + Model library for MobX",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -12,33 +12,37 @@
     "test": "jest",
     "test:watch": "nodemon -e js,ts --exec npm run test",
     "check": "tsc -p tsconfig.json --noEmit --pretty",
-    "lint":
-      "npm run check && tslint --project tsconfig.json --fix \"src/**/*.ts\" && prettier --write \"{src,examples}/**/*.{ts,js}\"",
+    "lint": "npm run check && tslint --project tsconfig.json --fix \"src/**/*.ts\" && prettier --write \"{src,examples}/**/*.{ts,js}\"",
     "lint:watch": "nodemon --exec npm run lint",
     "cover": "npm test -- --coverage",
-    "coveralls":
-      "npm run cover && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "coveralls": "npm run cover && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "precommit": "lint-staged",
     "publish:pre": "npm run lint && npm run build && npm run cover",
     "publish:post": "npm publish && git push --follow-tags",
-    "release:prerelease":
-      "npm run publish:pre && npm version prerelease && npm run publish:post",
-    "release:patch":
-      "npm run publish:pre && npm version patch && npm run publish:post",
-    "release:minor":
-      "npm run publish:pre && npm version minor && npm run publish:post",
-    "release:major":
-      "npm run publish:pre && npm version major && npm run publish:post"
+    "release:prerelease": "npm run publish:pre && npm version prerelease && npm run publish:post",
+    "release:patch": "npm run publish:pre && npm version patch && npm run publish:post",
+    "release:minor": "npm run publish:pre && npm version minor && npm run publish:post",
+    "release:major": "npm run publish:pre && npm version major && npm run publish:post"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jeffijoe/libx.git"
   },
-  "files": ["lib", "LICENSE.md", "README.md"],
+  "files": [
+    "lib",
+    "LICENSE.md",
+    "README.md"
+  ],
   "directories": {
     "lib": "lib"
   },
-  "keywords": ["mobx", "backbone", "tfrp", "state management", "react"],
+  "keywords": [
+    "mobx",
+    "backbone",
+    "tfrp",
+    "state management",
+    "react"
+  ],
   "author": "Jeff Hansen <jeff@jeffijoe.com>",
   "license": "MIT",
   "bugs": {
@@ -78,18 +82,32 @@
   },
   "dependencies": {},
   "lint-staged": {
-    "*.ts": ["prettier --write", "git add"]
+    "*.ts": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "jest": {
     "mapCoverage": true,
     "testRegex": "(/__tests__/.*\\.(test|spec))\\.(ts|tsx|js)$",
     "testEnvironment": "node",
-    "coveragePathIgnorePatterns": ["/node_modules/", "__tests__"],
-    "testPathIgnorePatterns": ["<rootDir>/lib"],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "__tests__"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/lib"
+    ],
     "transform": {
       "^.+\\.(j|t)sx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "transformIgnorePatterns": ["<rootDir>/node_modules/(?!lodash-es/.*)"],
-    "moduleFileExtensions": ["ts", "tsx", "js"]
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!lodash-es/.*)"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ]
   }
 }
