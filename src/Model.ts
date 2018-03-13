@@ -186,10 +186,10 @@ function withActions<T, A extends { [key: string]: Function }>(
             `functions, but found ${key}: ${typeof prop}`
         )
       }
-      result[key] = action(key, prop.bind(this))
+      ;(this as any)[key] = action(key, prop.bind(this))
     }
   }
-  return extendObservable(this, result)
+  return this as IFluidModel<T> & A
 }
 
 /**
