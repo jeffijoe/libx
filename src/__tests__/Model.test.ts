@@ -1,5 +1,5 @@
 import { Model, model } from '..'
-import { observable, isObservable } from 'mobx'
+import { observable, isObservableProp } from 'mobx'
 
 describe('Model', () => {
   describe('constructor', () => {
@@ -105,7 +105,7 @@ describe('model', () => {
       })
       expect(m.hello).toBe('world')
       expect(m.world).toBe(1337)
-      expect(isObservable(m, 'hello')).toBeTruthy()
+      expect(isObservableProp(m, 'hello')).toBeTruthy()
     })
   })
 

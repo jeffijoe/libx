@@ -192,7 +192,7 @@ export type ModelId = string | number | Date
 export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
   opts = Object.assign({}, defaults, opts)
   // Holds the actual items.
-  const items: IObservableArray<T> = observable.shallowArray([])
+  const items: IObservableArray<T> = observable.array([], { deep: false })
   const idMap = new Map<string, T>()
 
   const self = {
@@ -371,7 +371,43 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
   }
 
   function move(fromIndex: number, toIndex: number) {
-    items.move(fromIndex, toIndex)
+    function checkIndex(index: number) {
+      if (index < 0) {
+        throw new Error(
+          `[libx.collection.move] Index out of bounds: ${index} is negative`
+        )
+      }
+      const length = (items as any).$mobx.values.length
+      if (index >= length) {
+        throw new Error(
+          `[libx.collection.move] Index out of bounds: ${index} is not smaller than ${length}`
+        )
+      }
+    }
+    checkIndex(fromIndex)
+    checkIndex(toIndex)
+    if (fromIndex === toIndex) {
+      return self
+    }
+    const oldItems = (items as any).$mobx.values
+    let newItems: T[]
+    if (fromIndex < toIndex) {
+      newItems = [
+        ...oldItems.slice(0, fromIndex),
+        ...oldItems.slice(fromIndex + 1, toIndex + 1),
+        oldItems[fromIndex],
+        ...oldItems.slice(toIndex + 1)
+      ]
+    } else {
+      // toIndex < fromIndex
+      newItems = [
+        ...oldItems.slice(0, toIndex),
+        oldItems[fromIndex],
+        ...oldItems.slice(toIndex, fromIndex),
+        ...oldItems.slice(fromIndex + 1)
+      ]
+    }
+    items.replace(newItems)
     return self
   }
 

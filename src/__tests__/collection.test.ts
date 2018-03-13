@@ -227,15 +227,29 @@ describe('collection', () => {
     })
   })
 
-  describe('move', () => {
+  describe('#move', () => {
     it('works', () => {
       type Value = { id: number }
       const c: ICollection<Value> = collection<Value>()
       c.set([{ id: 1 }, { id: 2 }, { id: 3 }])
+      c.move(1, 1)
       c.move(0, 2)
       expect(c.items[0].id).toBe(2)
       expect(c.items[1].id).toBe(3)
       expect(c.items[2].id).toBe(1)
+
+      c.move(2, 0)
+      expect(c.items[0].id).toBe(1)
+      expect(c.items[1].id).toBe(2)
+      expect(c.items[2].id).toBe(3)
+    })
+
+    it('checks indexes', () => {
+      type Value = { id: number }
+      const c: ICollection<Value> = collection<Value>()
+      c.set([{ id: 1 }, { id: 2 }, { id: 3 }])
+      expect(() => c.move(-1, 2)).toThrowErrorMatchingSnapshot()
+      expect(() => c.move(0, 3)).toThrowErrorMatchingSnapshot()
     })
   })
 

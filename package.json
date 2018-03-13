@@ -12,37 +12,33 @@
     "test": "jest",
     "test:watch": "nodemon -e js,ts --exec npm run test",
     "check": "tsc -p tsconfig.json --noEmit --pretty",
-    "lint": "npm run check && tslint --project tsconfig.json --fix \"src/**/*.ts\" && prettier --write \"{src,examples}/**/*.{ts,js}\"",
+    "lint":
+      "npm run check && tslint --project tsconfig.json --fix \"src/**/*.ts\" && prettier --write \"{src,examples}/**/*.{ts,js}\"",
     "lint:watch": "nodemon --exec npm run lint",
     "cover": "npm test -- --coverage",
-    "coveralls": "npm run cover && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "coveralls":
+      "npm run cover && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "precommit": "lint-staged",
     "publish:pre": "npm run lint && npm run build && npm run cover",
     "publish:post": "npm publish && git push --follow-tags",
-    "release:prerelease": "npm run publish:pre && npm version prerelease && npm run publish:post",
-    "release:patch": "npm run publish:pre && npm version patch && npm run publish:post",
-    "release:minor": "npm run publish:pre && npm version minor && npm run publish:post",
-    "release:major": "npm run publish:pre && npm version major && npm run publish:post"
+    "release:prerelease":
+      "npm run publish:pre && npm version prerelease && npm run publish:post",
+    "release:patch":
+      "npm run publish:pre && npm version patch && npm run publish:post",
+    "release:minor":
+      "npm run publish:pre && npm version minor && npm run publish:post",
+    "release:major":
+      "npm run publish:pre && npm version major && npm run publish:post"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jeffijoe/libx.git"
   },
-  "files": [
-    "lib",
-    "LICENSE.md",
-    "README.md"
-  ],
+  "files": ["lib", "LICENSE.md", "README.md"],
   "directories": {
     "lib": "lib"
   },
-  "keywords": [
-    "mobx",
-    "backbone",
-    "tfrp",
-    "state management",
-    "react"
-  ],
+  "keywords": ["mobx", "backbone", "tfrp", "state management", "react"],
   "author": "Jeff Hansen <jeff@jeffijoe.com>",
   "license": "MIT",
   "bugs": {
@@ -54,27 +50,27 @@
   },
   "homepage": "https://github.com/jeffijoe/libx#readme",
   "devDependencies": {
-    "@types/jest": "^22.1.2",
-    "@types/lodash": "^4.14.102",
-    "@types/node": "^9.4.5",
+    "@types/jest": "^22.2.0",
+    "@types/lodash": "^4.14.104",
+    "@types/node": "^9.4.7",
     "@types/prettier": "^1.10.0",
     "@types/rimraf": "^2.0.2",
     "chai": "^4.1.2",
     "coveralls": "^3.0.0",
     "husky": "^0.14.3",
-    "jest": "^22.3.0",
-    "lint-staged": "^6.1.0",
+    "jest": "^22.4.2",
+    "lint-staged": "^7.0.0",
     "lodash": "^4.17.5",
-    "mobx": "^3.5.1",
-    "mocha": "^5.0.0",
-    "nodemon": "^1.14.12",
-    "prettier": "^1.10.2",
+    "mobx": "^4.0.0",
+    "mocha": "^5.0.4",
+    "nodemon": "^1.17.1",
+    "prettier": "^1.11.1",
     "rimraf": "^2.6.2",
-    "ts-jest": "^22.0.4",
+    "ts-jest": "^22.4.1",
     "tslint": "^5.9.1",
-    "tslint-config-prettier": "^1.7.0",
+    "tslint-config-prettier": "^1.10.0",
     "tslint-config-standard": "^7.0.0",
-    "typescript": "^2.7.1"
+    "typescript": "^2.7.2"
   },
   "peerDependencies": {
     "lodash": "^4.17.4",
@@ -82,32 +78,17 @@
   },
   "dependencies": {},
   "lint-staged": {
-    "*.ts": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.ts": ["prettier --write", "git add"]
   },
   "jest": {
-    "mapCoverage": true,
     "testRegex": "(/__tests__/.*\\.(test|spec))\\.(ts|tsx|js)$",
     "testEnvironment": "node",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "__tests__"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/lib"
-    ],
+    "coveragePathIgnorePatterns": ["/node_modules/", "__tests__"],
+    "testPathIgnorePatterns": ["<rootDir>/lib"],
     "transform": {
       "^.+\\.(j|t)sx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!lodash-es/.*)"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ]
+    "transformIgnorePatterns": ["<rootDir>/node_modules/(?!lodash-es/.*)"],
+    "moduleFileExtensions": ["ts", "tsx", "js"]
   }
 }
