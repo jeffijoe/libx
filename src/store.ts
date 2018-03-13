@@ -1,5 +1,10 @@
-import { collection, ICollection, ICollectionOptions } from './collection'
-import { IObjectHash, Model } from './Model'
+import {
+  collection,
+  ICollection,
+  ICollectionOptions,
+  IObjectHash,
+  Model
+} from '.'
 
 export interface IModelCollectionOptions<T extends Model>
   extends ICollectionOptions<T> {

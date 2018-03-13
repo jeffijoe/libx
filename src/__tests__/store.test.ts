@@ -1,6 +1,4 @@
-import { IStoreOpts, Store } from '../Store'
-import { ICollection } from '../collection'
-import { Model, model } from '../Model'
+import { Model, model, ICollection, IStoreOpts, Store } from '..'
 
 class RootStore {}
 

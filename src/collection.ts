@@ -1,4 +1,5 @@
 import { observable, IObservableArray, action } from 'mobx'
+import { referenceOne, referenceMany } from '.'
 const map = require('lodash/map')
 const filter = require('lodash/filter')
 const find = require('lodash/find')
@@ -118,6 +119,37 @@ export interface ICollection<T> {
    * Runs a `forEach` over the items and returns the collection.
    */
   forEach(iteratee: IIteratee<T, any>): this
+  /**
+   * Given a single or list of ids and a collection with models,
+   * returns the model(s) the IDs represent. If `field` is specified, it
+   * will be used instead of the source collection model ID.
+   * Only the first matching model per ID is returned.
+   * For "one/many-to-many" type references, use `referenceMany`.
+   *
+   * @param {Array<string>} ids
+   * @param {keyof T} field
+   */
+  referenceOne<K extends keyof T>(id: ModelId): T | null
+  referenceOne<K extends keyof T>(ids: Array<ModelId>): Array<T>
+  referenceOne<K extends keyof T>(id: T[K], field?: keyof T): T | null
+  referenceOne<K extends keyof T>(ids: Array<T[K]>, field?: keyof T): Array<T>
+  referenceOne<K extends keyof T>(
+    ids: T[K] | Array<T[K]>,
+    field?: keyof T
+  ): T | null | Array<T>
+  /**
+   * Given a single or list of ids and a collection with models,
+   * returns the models that match `field`.
+   * All matching models are returned and flattened.
+   * For "one-to-one" type references, use `referenceOne`.
+   *
+   * @param {Array<string>} ids
+   * @param {keyof T} field
+   */
+  referenceMany<K extends keyof T>(
+    ids: T[K] | Array<T[K]>,
+    field: keyof T
+  ): Array<T>
 }
 
 /**
@@ -181,6 +213,9 @@ export const defaults: ICollectionOptions<any> = {
   update: (existing, input, opts) => Object.assign(existing, input)
 }
 
+/**
+ * Possible model IDs.
+ */
 export type ModelId = string | number | Date
 
 /**
@@ -211,6 +246,10 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
     map: bindLodashFunc(items, map),
     reduce: bindLodashFunc(items, reduce),
     chunk: bindLodashFunc(items, chunk),
+    referenceOne: ((ids: any, field: any): any =>
+      (referenceOne as any)(self, ids, field)) as any,
+    referenceMany: ((ids: any, field: any): any =>
+      (referenceMany as any)(self, ids, field)) as any,
     forEach: (iteratee: IIteratee<T, any>) => {
       forEach(items, iteratee)
       return self

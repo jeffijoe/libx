@@ -1,5 +1,4 @@
-import { createRootStore } from '../rootStore'
-import { Store } from '../Store'
+import { createRootStore, Store } from '..'
 
 class Store1 extends Store {}
 

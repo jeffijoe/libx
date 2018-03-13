@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0
+
+* 🚨 **Breaking**: upgraded to MobX v4. To keep using MobX <= v3, use the LibX 0.x release.
+* ✨ **New**: add `referenceOne` and `referenceMany` utility functions.
+
 ## 0.3.0
 
 * Added factory-based model API.
