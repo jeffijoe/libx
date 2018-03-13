@@ -73,8 +73,8 @@
     "typescript": "^2.7.2"
   },
   "peerDependencies": {
-    "lodash": "^4.17.4",
-    "mobx": "^3.1.9"
+    "lodash": "^4.17.5",
+    "mobx": "^4.0.0"
   },
   "dependencies": {},
   "lint-staged": {
