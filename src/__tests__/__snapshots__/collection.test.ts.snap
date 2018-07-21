@@ -1,5 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`collection #move checks indexes 1`] = `"[libx.collection.move] Index out of bounds: -1 is negative"`;
+exports[`collection #move checks indexes 1`] = `"[mobx.array] Index out of bounds: -1 is negative"`;
 
-exports[`collection #move checks indexes 2`] = `"[libx.collection.move] Index out of bounds: 3 is not smaller than 3"`;
+exports[`collection #move checks indexes 2`] = `"[mobx.array] Index out of bounds: 3 is not smaller than 3"`;
