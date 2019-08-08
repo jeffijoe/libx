@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0.alpha-2
+
+* Conditional types for better inference of `T` in `ICollection<T>` [(#8](https://github.com/jeffijoe/libx/pull/8), [dezayasa](https://github.com/dezayasa))
+* Upgrade all packages
+
+## 1.0.0.alpha-1
+
+* Fluid model builder
+
 ## 1.0.0
 
 * 🚨 **Breaking**: upgraded to MobX v4. To keep using MobX <= v3, use the LibX 0.x release.

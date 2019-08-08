@@ -149,16 +149,16 @@ export class Model implements IModel {
  *
  * @param target Optional target object to enhance. Defaults to a new one.
  */
-export function model<T extends {}>(target?: T): T & IFluidModel<T> {
+export function model<T>(target?: T): T & IFluidModel<T> {
   target = target || ({} as any)
   target = Object.assign(target, {
     set: action('set', Model.prototype.set.bind(target)),
     pick: Model.prototype.pick.bind(target),
     parse: (target as any).parse || Model.prototype.parse.bind(target),
     assign: Object.assign.bind(null, target),
-    extendObservable: extendObservable.bind(null, target),
-    withActions: withActions.bind(target),
-    decorate: decorate.bind(target)
+    extendObservable: extendObservable.bind(null, target!),
+    withActions: withActions.bind(target as IFluidModel<T>),
+    decorate: decorate.bind(target as IFluidModel<T>)
   }) as any
 
   return target as T & IFluidModel<T>

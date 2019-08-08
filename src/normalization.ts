@@ -62,9 +62,10 @@ export function referenceMany<T, K extends keyof T>(
   field: keyof T
 ): Array<T> {
   if (Array.isArray(ids)) {
-    // prettier-ignore
-    const result = ids.map(id => referenceMany(source, id, field)).filter(Boolean)
-    return [].concat.apply([], result)
+    const result = ids
+      .map(id => referenceMany(source, id, field))
+      .filter(Boolean)
+    return [].concat.apply([], result as any)
   }
 
   return source.filter(x => x[field] === ids)

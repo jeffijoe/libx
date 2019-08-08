@@ -4,9 +4,7 @@
   "description": "Collection + Model library for MobX",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
-  "engines": {
-    "node": ">=4.0.0"
-  },
+  "engines": {},
   "scripts": {
     "build": "rimraf lib && tsc -p tsconfig.build.json",
     "test": "jest",
@@ -53,34 +51,34 @@
   },
   "homepage": "https://github.com/jeffijoe/libx#readme",
   "devDependencies": {
-    "@types/jest": "^23.3.0",
-    "@types/lodash": "^4.14.112",
-    "@types/node": "^10.5.2",
-    "@types/prettier": "^1.13.2",
+    "@types/jest": "^24.0.17",
+    "@types/lodash": "^4.14.136",
+    "@types/node": "^12.7.1",
+    "@types/prettier": "^1.18.1",
     "@types/rimraf": "^2.0.2",
-    "chai": "^4.1.2",
-    "coveralls": "^3.0.2",
-    "husky": "^0.14.3",
-    "jest": "^23.4.1",
-    "lint-staged": "^7.2.0",
-    "lodash": "^4.17.10",
-    "mobx": "^5.0.3",
-    "mocha": "^5.2.0",
-    "nodemon": "^1.18.3",
-    "prettier": "^1.13.7",
+    "chai": "^4.2.0",
+    "coveralls": "^3.0.6",
+    "husky": "^3.0.3",
+    "jest": "^24.8.0",
+    "lint-staged": "^9.2.1",
+    "lodash": "^4.17.15",
+    "mobx": "^5.13.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2",
     "rimraf": "^2.6.2",
-    "ts-jest": "^23.0.1",
-    "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.14.0",
-    "tslint-config-standard": "^7.1.0",
-    "typescript": "^2.9.2"
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-config-standard": "^8.0.1",
+    "typescript": "^3.5.3"
   },
   "peerDependencies": {
     "lodash": "^4.17.5",
     "mobx": "^4.0.0"
   },
   "dependencies": {
-    "mobx-utils": "^5.0.0"
+    "mobx-utils": "^5.4.1"
   },
   "lint-staged": {
     "*.ts": [
@@ -99,7 +97,7 @@
       "<rootDir>/lib"
     ],
     "transform": {
-      "^.+\\.(j|t)sx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      "^.+\\.(j|t)sx?$": "ts-jest"
     },
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/(?!lodash-es/.*)"
