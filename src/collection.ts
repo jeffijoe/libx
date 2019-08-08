@@ -56,11 +56,17 @@ export interface ICollection<T> {
   /**
    * Same as the singular version, but with multiple.
    */
-  set(data?: any[], setOpts?: ICollectionOptions<T>): T[] | undefined
+  set<D>(
+    data?: D[],
+    setOpts?: ICollectionOptions<T>
+  ): D extends undefined ? undefined : T[]
   /**
    * Adds a single item and maps it using the mapper in the options.
    */
-  set(data?: any, setOpts?: ICollectionOptions<T>): T | undefined
+  set<D>(
+    data?: D,
+    setOpts?: ICollectionOptions<T>
+  ): D extends undefined ? undefined : T
   /**
    * Clears the collection.
    */
