@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^2.7.2"
+    "typescript": "^3.5.3"
   },
   "dependencies": {
-    "moment": "^2.21.0"
+    "moment": "^2.24.0"
   }
 }
