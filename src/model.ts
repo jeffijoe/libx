@@ -92,6 +92,11 @@ export type IFluidModel<T> = T &
  */
 export class Model implements IModel {
   /**
+   * Reference to the root store.
+   */
+  rootStore: any
+
+  /**
    * If attributes are specified, `set` is called along with the model options.
    */
   constructor(attributes?: IObjectHash, options?: IModelOptions) {
