@@ -77,7 +77,7 @@
   },
   "peerDependencies": {
     "lodash": "^4.17.5",
-    "mobx": "^4.0.0"
+    "mobx": "^5.0.0"
   },
   "dependencies": {
     "mobx-utils": "^5.0.0"
