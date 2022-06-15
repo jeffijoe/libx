@@ -1,15 +1,17 @@
 import { observable, IObservableArray, action } from 'mobx'
 import { referenceOne, referenceMany } from '.'
-import { moveItem } from 'mobx-utils'
-const map = require('lodash/map')
-const filter = require('lodash/filter')
-const find = require('lodash/find')
-const some = require('lodash/some')
-const every = require('lodash/every')
-const reduce = require('lodash/reduce')
-const chunk = require('lodash/chunk')
-const forEach = require('lodash/forEach')
-const orderBy = require('lodash/orderBy')
+import { moveItem } from './array-utils'
+import {
+  map,
+  filter,
+  find,
+  some,
+  every,
+  reduce,
+  chunk,
+  forEach,
+  orderBy,
+} from 'lodash'
 
 /**
  * Used in various Lodash functions such as `map`, `filter`..
@@ -217,7 +219,7 @@ export const defaults: ICollectionOptions<any> = {
   getDataId: (input: any, opts) => input[opts.idAttribute || 'id'],
   getModelId: (existing, opts) => existing[opts.idAttribute || 'id'],
   idAttribute: 'id',
-  update: (existing, input, opts) => Object.assign(existing, input)
+  update: (existing, input, opts) => Object.assign(existing, input),
 }
 
 /**
@@ -266,7 +268,7 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
     move,
     get length() {
       return items.length
-    }
+    },
   }
 
   function get(id: ModelId[]): Array<T | undefined>
@@ -289,7 +291,7 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
       return fromMap
     }
 
-    const found = items.find(item => {
+    const found = items.find((item) => {
       const modelId = opts!.getModelId!(item, opts!)
       if (!modelId) {
         return false
@@ -317,7 +319,7 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
     }
 
     if (Array.isArray(data)) {
-      return data.map(d => set(d, setOpts) as T)
+      return data.map((d) => set(d, setOpts) as T)
     }
 
     let dataId = opts!.getDataId!(data, setOpts!)
@@ -359,7 +361,7 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
     createOpts?: ICollectionOptions<T>
   ): T[] | T {
     if (Array.isArray(data)) {
-      return data.map(d => create(d, createOpts))
+      return data.map((d) => create(d, createOpts))
     }
 
     createOpts = Object.assign({}, opts as any, createOpts)
@@ -379,7 +381,7 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
     }
 
     // Filter out existing models.
-    models = models.filter(x => items.indexOf(x) === -1)
+    models = models.filter((x) => items.indexOf(x) === -1)
     items.push(...models)
     return self
   }

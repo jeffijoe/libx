@@ -31,7 +31,7 @@ export function createRootStore<TRootStore>(
   factory =
     factory || ((storeClass, rootStore) => new storeClass({ rootStore }))
 
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     const val = obj[key]
     result[key] = typeof val === 'function' ? factory!(val, result) : val
   })

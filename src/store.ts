@@ -3,7 +3,7 @@ import {
   ICollection,
   ICollectionOptions,
   IObjectHash,
-  Model
+  Model,
 } from '.'
 
 export interface IModelCollectionOptions<T extends Model>
@@ -58,7 +58,7 @@ export class Store implements IStore {
         new opts.model(attributes, {
           stripUndefined: true,
           parse: true,
-          ...options
+          ...options,
         }),
       update: (
         existing: TModel,
@@ -68,9 +68,9 @@ export class Store implements IStore {
         existing.set(input, {
           stripUndefined: true,
           parse: true,
-          ...options
+          ...options,
         } as any),
-      ...opts
+      ...opts,
     } as IModelCollectionOptions<TModel>)
   }
 }

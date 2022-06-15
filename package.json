@@ -51,34 +51,26 @@
   },
   "homepage": "https://github.com/jeffijoe/libx#readme",
   "devDependencies": {
-    "@types/jest": "^24.0.17",
+    "@types/jest": "^28.1.1",
     "@types/lodash": "^4.14.136",
-    "@types/node": "^12.7.1",
-    "@types/prettier": "^1.18.1",
-    "@types/rimraf": "^2.0.2",
+    "@types/node": "^17.0.44",
+    "@types/prettier": "^2.6.3",
+    "@types/rimraf": "^3.0.2",
     "chai": "^4.2.0",
     "coveralls": "^3.0.6",
-    "husky": "^3.0.3",
-    "jest": "^24.8.0",
-    "lint-staged": "^9.2.1",
+    "husky": "^8.0.1",
+    "jest": "^28.1.1",
+    "lint-staged": "^13.0.1",
     "lodash": "^4.17.15",
-    "mobx": "^5.13.0",
-    "mocha": "^6.2.0",
-    "nodemon": "^1.19.1",
-    "prettier": "^1.18.2",
-    "rimraf": "^2.6.2",
-    "ts-jest": "^24.0.2",
-    "tslint": "^5.18.0",
+    "mobx": "^6.6.0",
+    "nodemon": "^2.0.16",
+    "prettier": "^2.7.0",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^28.0.5",
+    "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
-    "tslint-config-standard": "^8.0.1",
-    "typescript": "^3.5.3"
-  },
-  "peerDependencies": {
-    "lodash": "^4.17.5",
-    "mobx": "^4.0.0"
-  },
-  "dependencies": {
-    "mobx-utils": "^5.4.1"
+    "tslint-config-standard": "^9.0.0",
+    "typescript": "^4.7.3"
   },
   "lint-staged": {
     "*.ts": [

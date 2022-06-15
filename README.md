@@ -13,60 +13,56 @@ Collection + Model infrastructure for [MobX](https://github.com/mobxjs/mobx) app
 
 ## Install
 
-```
-npm install --save libx
+```bash
+# Depends on MobX and Lodash, it's BYOD (Bring Your Own Dependencies)
+npm install --save libx lodash mobx
 ```
 
 # Table of Contents
 
-* [libx](#libx)
-  * [Install](#install)
-* [Table of Contents](#table-of-contents)
-* [Why?](#why)
-* [Examples](#examples)
-* [Concepts](#concepts)
-  * [The Root Store](#the-root-store)
-  * [Store](#store)
-  * [Collection](#collection)
-  * [Model](#model)
-* [Let's build an app!](#lets-build-an-app)
-  * [Step 1: the Root Store](#step-1-the-root-store)
-  * [Step 2: the TodoStore and <code>Todo</code> model](#step-2-the-todostore-and-todo-model)
-  * [Step 3: the UserStore and <code>User</code> model](#step-3-the-userstore-and-user-model)
-  * [Step 4: the UI](#step-4-the-ui)
-* [API documentation](#api-documentation)
-  * [collection([opts])](#collectionopts)
-    * [Collection object](#collection-object)
-    * [collection.items](#collectionitems)
-    * [collection.length](#collectionlength)
-    * [collection.add(models)](#collectionaddmodels)
-    * [collection.create(data, [opts])](#collectioncreatedata-opts)
-    * [collection.get(id)](#collectiongetid)
-    * [collection.set(data, [opts])](#collectionsetdata-opts)
-    * [collection.clear()](#collectionclear)
-    * [collection.remove(modelOrId)](#collectionremovemodelorid)
-    * [collection.move(fromIndex, toIndex)](#collectionmovefromindex-toindex)
-    * [collection.referenceOne(ids, field?)](#collectionreferenceoneids-field)
-    * [collection.referenceMany(ids, field)](#collectionreferencemanyids-field)
-    * [LoDash methods](#lodash-methods)
-  * [The Model class](#the-model-class)
-    * [constructor (attributes, opts)](#constructor-attributes-opts)
-    * [.rootStore](#rootstore)
-    * [.set (attributes, opts)](#set-attributes-opts)
-    * [.parse (attributes, opts)](#parse-attributes-opts)
-      * [Parent -&gt; Child -&gt; Parent parsing](#parent---child---parent-parsing)
-    * [.pick (properties)](#pick-properties)
-  * [The model builder](#the-model-builder)
-    * [.extendObservable(properties)](#extendobservableproperties)
-    * [.withActions(actions)](#withactionsactions)
-    * [.assign(...properties)](#assignproperties)
-    * [.decorate(fn)](#decoratefn)
-  * [The Store class](#the-store-class)
-    * [store.collection(opts)](#storecollectionopts)
-  * [createRootStore(obj)](#createrootstoreobj)
-* [Projects using LibX](#projects-using-libx)
-* [See Also](#see-also)
-* [Author](#author)
+- [libx](#libx)
+  - [Install](#install)
+- [Table of Contents](#table-of-contents)
+- [Why?](#why)
+- [Examples](#examples)
+- [Concepts](#concepts)
+  - [The Root Store](#the-root-store)
+  - [Store](#store)
+  - [Collection](#collection)
+  - [Model](#model)
+- [Let's build an app!](#lets-build-an-app)
+  - [Step 1: the Root Store](#step-1-the-root-store)
+  - [Step 2: the `TodoStore` and `Todo` model](#step-2-the-todostore-and-todo-model)
+  - [Step 3: the `UserStore` and `User` model](#step-3-the-userstore-and-user-model)
+  - [Step 4: the UI](#step-4-the-ui)
+- [API documentation](#api-documentation)
+  - [`collection([opts])`](#collectionopts)
+    - [Collection object](#collection-object)
+    - [`collection.items`](#collectionitems)
+    - [`collection.length`](#collectionlength)
+    - [`collection.add(models)`](#collectionaddmodels)
+    - [`collection.create(data, [opts])`](#collectioncreatedata-opts)
+    - [`collection.get(id)`](#collectiongetid)
+    - [`collection.set(data, [opts])`](#collectionsetdata-opts)
+    - [`collection.clear()`](#collectionclear)
+    - [`collection.remove(modelOrId)`](#collectionremovemodelorid)
+    - [`collection.move(fromIndex, toIndex)`](#collectionmovefromindex-toindex)
+    - [`collection.referenceOne(ids, field?)`](#collectionreferenceoneids-field)
+    - [`collection.referenceMany(ids, field)`](#collectionreferencemanyids-field)
+    - [LoDash methods](#lodash-methods)
+  - [The `Model` class](#the-model-class)
+    - [`constructor (attributes, opts)`](#constructor-attributes-opts)
+    - [`.rootStore`](#rootstore)
+    - [`.set (attributes, opts)`](#set-attributes-opts)
+    - [`.parse (attributes, opts)`](#parse-attributes-opts)
+      - [Parent -> Child -> Parent parsing](#parent---child---parent-parsing)
+    - [`.pick (properties)`](#pick-properties)
+  - [The `Store` class](#the-store-class)
+    - [`store.collection(opts)`](#storecollectionopts)
+  - [`createRootStore(obj)`](#createrootstoreobj)
+- [Projects using LibX](#projects-using-libx)
+- [See Also](#see-also)
+- [Author](#author)
 
 # Why?
 
@@ -988,144 +984,6 @@ If it was, parse the data _again_ but while _updating the existing model_.
 ### `.pick (properties)`
 
 Picks the properties on the model. Basically LoDash's `_.pick(this, properties)`
-
-## The `model` builder
-
-If you're not a fan of using ES6 classes, you can use the `model` builder pattern instead.
-
-Invoking `model()` gives you an object with the same methods as a regular `Model`, plus a few more.
-
-**Important**: No props are set on the model until you explicitly call `set()`, as opposed to the `Model` constructor which calls `set` for you. Additionally, the `rootStore` is not set either, but that's okay because you can access the root store through your factory function's closure.
-
-The one and only parameter to `model` is an optional `target` to enhance with model capabilities instead of an empty object.
-
-**Example:**
-
-```js
-// Factory function
-const Todo = (attrs, opts) => {
-  const { rootStore } = opts
-  // Create a model instance...
-  return (
-    model()
-      // Add some observables
-      .extendObservable({
-        text: '',
-        completed: false,
-        creator: null
-      })
-      // Provide a custom `parse` implementation
-      .assign({
-        parse(attrs) {
-          return {
-            ...attrs,
-            creator: rootStore.userStore.users.set(attrs.creator)
-          }
-        }
-      })
-      // Finally set the passed in props.
-      .set(attrs, opts)
-  )
-}
-
-// Look ma'! No `new`!
-const todo = Todo({ text: 'Use LibX', completed: true })
-```
-
-In addition to the methods from `Model`, a `model()` object has the following additional methods.
-
-### `.extendObservable(properties)`
-
-Calls `mobx.extendObservable` with the model instance bound as the first parameter.
-
-**Example:**
-
-```js
-// This...
-const m = model().extendObservable({ hello: 'world' })
-
-// is the same as this...
-const m = model()
-extendObservable(m, { hello: 'world' })
-```
-
-### `.withActions(actions)`
-
-Attaches actions to the model.
-
-**Example:**
-
-```js
-// This...
-const m = model().withActions({
-  someAction() {}
-})
-
-// is the same as this...
-const m = model()
-extendObservable(m, {
-  someAction: action('someAction', function someAction() {}.bind(m))
-})
-```
-
-### `.assign(...properties)`
-
-Shorthand to `Object.assign(m, ...)`
-
-**Example:**
-
-```js
-// This...
-const m = model().assign({
-  stuff: 'hello'
-})
-
-// is the same as this...
-const m = model()
-Object.assign(m, {
-  stuff: 'hello'
-})
-```
-
-### `.decorate(fn)`
-
-Invokes the specified method with the model instance as the one and only argument.
-
-The return value is not used for anything but TypeScript type merging.
-
-This is useful for applying decorators/mixins.
-
-**Example:**
-
-```js
-function withValidation(requiredFields) {
-  return target => {
-    target.validate = () => {
-      // Returns `true` if every required field is present...
-      return requiredFields.every(f => !!target[f])
-    }
-  }
-}
-
-// This...
-const m = model()
-  .decorate(withValidation(['first', 'last']))
-  .extendObservable({
-    first: '',
-    last: ''
-  })
-
-// is the same as this...
-const m = model()
-withValidation(['first', 'last'])(m)
-extendObservable(m, {
-  first: '',
-  last: ''
-})
-
-// Now we can use the added `validate` method
-m.validate()
-```
 
 ## The `Store` class
 

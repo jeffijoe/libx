@@ -40,7 +40,7 @@ export function referenceOne<T, K extends keyof T>(
   }
 
   if (field !== undefined) {
-    return source.find(x => x[field] === ids) || null
+    return source.find((x) => x[field] === ids) || null
   }
 
   return source.get(ids) || null
@@ -63,10 +63,10 @@ export function referenceMany<T, K extends keyof T>(
 ): Array<T> {
   if (Array.isArray(ids)) {
     const result = ids
-      .map(id => referenceMany(source, id, field))
+      .map((id) => referenceMany(source, id, field))
       .filter(Boolean)
     return [].concat.apply([], result as any)
   }
 
-  return source.filter(x => x[field] === ids)
+  return source.filter((x) => x[field] === ids)
 }

@@ -42,7 +42,7 @@ class Todo extends Model {
       // Assign the creator ID so we can look it up.
       creatorId: creator._id,
       // We want all our dates as `Moment`s.
-      createdAt: moment(json.createdAt)
+      createdAt: moment(json.createdAt),
     }
   }
 }
@@ -52,7 +52,7 @@ class TodoStore extends Store {
 
   fetchTodos() {
     // Fetch the todos, then load them into the collection.
-    return API.getTodos().then(todos => this.todos.set(todos))
+    return API.getTodos().then((todos) => this.todos.set(todos))
   }
 }
 
@@ -72,7 +72,7 @@ class User extends Model {
 class UserStore extends Store {
   users = this.collection({
     model: User,
-    idAttribute: '_id' // just to demo how we actually use the ID.
+    idAttribute: '_id', // just to demo how we actually use the ID.
   })
 
   fetchUser(id) {
@@ -86,7 +86,7 @@ class UserStore extends Store {
 // ---------------------------
 const root = createRootStore({
   todoStore: TodoStore,
-  userStore: UserStore
+  userStore: UserStore,
 })
 
 // ---------------------------
@@ -97,7 +97,7 @@ const { todoStore, userStore } = root
 
 todoStore
   .fetchTodos()
-  .then(todos => {
+  .then((todos) => {
     const [, todo] = todos
     assert(todos.length === 3)
     assert(todo instanceof Todo)
@@ -108,7 +108,7 @@ todoStore
     assert(todo.creator._id === 2)
     assert(todo.creator.twitterHandle === undefined) // we don't have this yet.
 
-    return userStore.fetchUser(2).then(user => {
+    return userStore.fetchUser(2).then((user) => {
       assert(user === todo.creator) // Same instance, woah!
       assert(user.twitterHandle === 'jeffijoe')
 
@@ -117,12 +117,12 @@ todoStore
       console.log('Todo creator twitter handle:', todo.creator.twitterHandle)
       console.log(
         'Todo creator todos:',
-        `[${todo.creator.todos.map(x => `"${x.text}"`).join(', ')}]`
+        `[${todo.creator.todos.map((x) => `"${x.text}"`).join(', ')}]`
       )
       console.log('-------------')
       console.log('So long, and thanks for all the fish!')
     })
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err)
   })

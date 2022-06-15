@@ -10,8 +10,8 @@ export class API {
         dateCreated: '2017-02-19T14:30:00',
         creator: {
           _id: 1,
-          name: 'Michel Weststrate'
-        }
+          name: 'Michel Weststrate',
+        },
       },
       {
         id: '123abcd',
@@ -20,8 +20,8 @@ export class API {
         dateCreated: '2017-02-19T14:54:00',
         creator: {
           _id: 2,
-          name: 'Jeff Hansen'
-        }
+          name: 'Jeff Hansen',
+        },
       },
       {
         id: 'a1b2c3',
@@ -30,9 +30,9 @@ export class API {
         dateCreated: '2017-02-19T15:22:00',
         creator: {
           _id: 2,
-          name: 'Jeff Hansen'
-        }
-      }
+          name: 'Jeff Hansen',
+        },
+      },
     ])
   }
 
@@ -42,14 +42,14 @@ export class API {
       {
         _id: 1,
         name: 'Michel Weststrate',
-        twitterHandle: 'mweststrate'
+        twitterHandle: 'mweststrate',
       },
       {
         _id: 2,
         name: 'Jeff Hansen',
-        twitterHandle: 'jeffijoe'
-      }
+        twitterHandle: 'jeffijoe',
+      },
     ]
-    return Promise.resolve(users.find(x => x._id === id))
+    return Promise.resolve(users.find((x) => x._id === id))
   }
 }
