@@ -18,7 +18,7 @@ const c1 = collection<Model1>()
 c1.set([
   { id: 1, model2Id: '1' },
   { id: 2, model2Id: '2' },
-  { id: 3, model2Id: '2' }
+  { id: 3, model2Id: '2' },
 ])
 const c2 = collection<Model2>()
 c2.set([{ id: '1' }, { id: '2' }])

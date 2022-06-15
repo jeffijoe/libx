@@ -10,8 +10,8 @@ describe('collection', () => {
   describe('#set', () => {
     it('adds and reuses object', () => {
       const c = collection<Model>({
-        create: input => new Model(input),
-        update: (existing, input) => existing.set(input)
+        create: (input) => new Model(input),
+        update: (existing, input) => existing.set(input),
       })
       const result = c.set({ id: 1 })
       const result2 = c.set({ id: 1, top: 'kek' })
@@ -34,8 +34,8 @@ describe('collection', () => {
     it('supports adding multiple', () => {
       const c = collection<{ id: number }>()
       const a = c.set([{ id: 1 }, { id: 2 }])
-      const m1 = a![0]
-      const m2 = a![1]
+      const m1 = a[0]
+      const m2 = a[1]
       expect(m1.id).toBe(1)
       expect(m2.id).toBe(2)
     })
@@ -43,13 +43,14 @@ describe('collection', () => {
     describe('circular reference parsing', () => {
       it('only adds one', () => {
         const c1 = collection<any>({
-          create: data => parseParent(data),
-          update: (existing, data) => Object.assign(existing, parseParent(data))
+          create: (data) => parseParent(data),
+          update: (existing, data) =>
+            Object.assign(existing, parseParent(data)),
         })
 
         const c2 = collection<any>({
-          create: data => parseChild(data),
-          update: (existing, data) => Object.assign(existing, parseChild(data))
+          create: (data) => parseChild(data),
+          update: (existing, data) => Object.assign(existing, parseChild(data)),
         })
 
         const data = {
@@ -59,9 +60,9 @@ describe('collection', () => {
             id: 'c1',
             parent: {
               id: 'p1',
-              prop2: 'world'
-            }
-          }
+              prop2: 'world',
+            },
+          },
         }
 
         const parent = c1.set(data)
@@ -77,7 +78,7 @@ describe('collection', () => {
           child = c2.set(child)
           return {
             ...data,
-            child
+            child,
           }
         }
 
@@ -85,7 +86,7 @@ describe('collection', () => {
           parent = c1.set(parent)
           return {
             ...data,
-            parent
+            parent,
           }
         }
       })
@@ -113,7 +114,7 @@ describe('collection', () => {
       c.set({ id: 1 })
       const [o2, o3] = c.create([
         { hello: 'world' },
-        { id: 3, hello: 'libx' }
+        { id: 3, hello: 'libx' },
       ] as any[])
       expect(o2.hello).toBe('world')
       expect(o3.id).toBe(3)
@@ -187,27 +188,27 @@ describe('collection', () => {
       const c = collection<IModel>({
         create: (data: IData) => ({ identifier: parseInt(data._id, 10) }),
         getDataId: (input: IData) => input._id,
-        getModelId: (input: IModel) => input.identifier
+        getModelId: (input: IModel) => input.identifier,
       })
 
       const result = c.set({ _id: '1' })
       const result2 = c.set({ _id: '1', top: 'kek' })
-      expect(result!.identifier).toBe(1)
-      expect(result2!.identifier).toBe(1)
+      expect(result.identifier).toBe(1)
+      expect(result2.identifier).toBe(1)
       expect(result).toBe(result2)
-      expect(result!.top).toBe('kek')
-      expect(result2!.top).toBe('kek')
+      expect(result.top).toBe('kek')
+      expect(result2.top).toBe('kek')
     })
 
     it('throws when an invalid ID is returned from the data', () => {
       let c = collection<{ id: number }>({
-        getDataId: () => null
+        getDataId: () => null,
       })
 
       expect(() => c.set({ id: 2 })).toThrow(/null.*ID/i)
 
       c = collection<{ id: number }>({
-        getDataId: () => undefined
+        getDataId: () => undefined,
       })
 
       expect(c.set({ id: 2 })).toBeUndefined()
@@ -262,35 +263,35 @@ describe('collection', () => {
         {
           id: 1,
           name: 'Jeff',
-          gender: 'male'
+          gender: 'male',
         },
         {
           id: 2,
           name: 'Amanda',
-          gender: 'female'
+          gender: 'female',
         },
         {
           id: 3,
           name: 'Will',
-          gender: 'male'
-        }
+          gender: 'male',
+        },
       ])
     })
 
     it('#map', () => {
-      const mapped = c.map(x => x.name)
+      const mapped = c.map((x) => x.name)
       expect(mapped).toEqual(['Jeff', 'Amanda', 'Will'])
     })
 
     it('#filter', () => {
-      const male = c.filter(x => x.gender === 'male')
+      const male = c.filter((x) => x.gender === 'male')
       expect(male.length).toBe(2)
       expect(male[0].id).toBe(1)
       expect(male[1].id).toBe(3)
     })
 
     it('#find', () => {
-      const jeff = c.find(x => x.name === 'Jeff')
+      const jeff = c.find((x) => x.name === 'Jeff')
       expect(jeff).toBeDefined()
       expect(jeff!.id).toBe(1)
     })
@@ -345,11 +346,11 @@ describe('collection', () => {
       c = collection<{ id: number }>()
       c.set([
         {
-          id: 1
+          id: 1,
         },
         {
-          id: 2
-        }
+          id: 2,
+        },
       ])
     })
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0.alpha-3
+
+* Remove the `model` builder as I have never seen or heard of it used.
+* Upgrade packages, including MobX to v6.
+* Remove `peerDependencies` as they cause more trouble than they are worth.
+* Remove dependency on `mobx-utils` and copy over the the `moveItems` from there.
+
 ## 1.0.0.alpha-2
 
 * Conditional types for better inference of `T` in `ICollection<T>` [(#8](https://github.com/jeffijoe/libx/pull/8), [dezayasa](https://github.com/dezayasa))

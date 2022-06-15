@@ -44,7 +44,7 @@ class Todo extends Model {
       // Assign the creator ID so we can look it up.
       creatorId: creator._id,
       // We want all our dates as `Moment`s.
-      createdAt: moment(json.createdAt)
+      createdAt: moment(json.createdAt),
     }
   }
 }
@@ -75,7 +75,7 @@ class User extends Model {
 class UserStore extends Store {
   users = this.collection<User>({
     model: User,
-    idAttribute: '_id' // just to demo.
+    idAttribute: '_id', // just to demo.
   })
 
   fetchUser(id: number) {
@@ -106,7 +106,7 @@ const root = new RootStore()
 
 const { todoStore, userStore } = root
 
-todoStore.fetchTodos().then(todos => {
+todoStore.fetchTodos().then((todos) => {
   const [, todo] = todos
   assert(todos.length === 3)
   assert(todo instanceof Todo)
@@ -117,7 +117,7 @@ todoStore.fetchTodos().then(todos => {
   assert(todo.creator._id === 2)
   assert(todo.creator.twitterHandle === undefined) // we don't have this yet.
 
-  return userStore.fetchUser(2).then(user => {
+  return userStore.fetchUser(2).then((user) => {
     assert(user === todo.creator) // Same instance, woah!
     assert(user.twitterHandle === 'jeffijoe')
 
@@ -126,7 +126,7 @@ todoStore.fetchTodos().then(todos => {
     console.log('Todo creator twitter handle:', todo.creator.twitterHandle)
     console.log(
       'Todo creator todos:',
-      `[${todo.creator.todos.map(x => `"${x.text}"`).join(', ')}]`
+      `[${todo.creator.todos.map((x) => `"${x.text}"`).join(', ')}]`
     )
     console.log('-------------')
     console.log('So long, and thanks for all the fish!')

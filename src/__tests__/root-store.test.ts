@@ -15,7 +15,7 @@ describe('createRootStore', () => {
       store1: Store1,
       store2: Store2,
       val1: 123,
-      func1: spy1
+      func1: spy1,
     })
 
     expect(rootStore.store1).toBeInstanceOf(Store1)
@@ -39,7 +39,7 @@ describe('createRootStore', () => {
         store1: Store1,
         store2: Store2,
         val1: 123,
-        func1: spy1
+        func1: spy1,
       },
       factory
     )

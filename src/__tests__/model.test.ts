@@ -1,5 +1,5 @@
-import { Model, model } from '..'
-import { observable, isObservableProp } from 'mobx'
+import { Model } from '..'
+import { observable } from 'mobx'
 
 describe('Model', () => {
   describe('constructor', () => {
@@ -77,81 +77,6 @@ describe('Model', () => {
       const picked = m.pick(['hello'])
       expect(picked.hello).toBe('world')
       expect('world' in picked).toBeFalsy()
-    })
-  })
-})
-
-describe('model', () => {
-  it('returns a new model when nothing is specified', () => {
-    const m = model()
-    m.set({ hello: 'world' })
-    expect((m as any).hello).toBe('world')
-  })
-
-  it('enhances the specified object', () => {
-    const existing = { hello: 'guys' }
-    const m = model(existing)
-    m.set({ hello: 'world' })
-    expect(existing.hello).toBe('world')
-  })
-
-  describe('extendObservable', () => {
-    it('works', () => {
-      const m = model().extendObservable({
-        hello: 'world',
-        get world() {
-          return 1337
-        }
-      })
-      expect(m.hello).toBe('world')
-      expect(m.world).toBe(1337)
-      expect(isObservableProp(m, 'hello')).toBeTruthy()
-    })
-  })
-
-  describe('withActions', () => {
-    it('attaches actions', () => {
-      const m = model()
-        .assign({
-          cid: 'hey'
-        })
-        .extendObservable({
-          hello: 'people'
-        })
-        .withActions({
-          setHello(this: any, s: string) {
-            this.hello = s
-          }
-        })
-
-      m.setHello('world')
-      expect(m.hello).toBe('world')
-      expect(m.cid).toBe('hey')
-    })
-
-    it('fails when not a function', () => {
-      expect(() => model().withActions({ hello: 'haha' })).toThrow(
-        /hello.*string/i
-      )
-    })
-  })
-
-  describe('decorate', () => {
-    it('invokes the function', () => {
-      const m = model()
-        .assign({ hello: 'people' })
-        .decorate(t => {
-          const v = {
-            validate() {
-              return t.hello === 'world'
-            }
-          }
-          Object.assign(t, v)
-          return null! as typeof v
-        })
-      expect(m.validate()).toBe(false)
-      m.set({ hello: 'world' })
-      expect(m.validate()).toBe(true)
     })
   })
 })
