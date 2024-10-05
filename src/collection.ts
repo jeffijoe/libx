@@ -1,5 +1,5 @@
 import { observable, IObservableArray, action } from 'mobx'
-import { referenceOne, referenceMany } from '.'
+import { referenceOne, referenceMany } from './normalization'
 import { moveItem } from './array-utils'
 
 /**

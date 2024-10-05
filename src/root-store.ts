@@ -1,4 +1,4 @@
-import { Store } from '.'
+import type { Store } from './store'
 
 export type StoreClass<TRootStore> =
   | (new (props: { rootStore: TRootStore }) => Store)

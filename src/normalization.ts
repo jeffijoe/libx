@@ -1,4 +1,4 @@
-import { ICollection, ModelId } from '.'
+import type { ModelId, ICollection } from './collection'
 
 /**
  * Given a single or list of ids and a collection with models,

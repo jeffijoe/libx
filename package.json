@@ -6,7 +6,7 @@
   "typings": "lib/index.d.ts",
   "engines": {},
   "scripts": {
-    "build": "rimraf lib && tsc -p tsconfig.build.json",
+    "build": "rimraf lib && tsc -p tsconfig.build.json && rollup -c",
     "test": "jest",
     "check": "tsc -p tsconfig.json --noEmit --pretty",
     "lint": "npm run check && eslint --fix \"{src,examples}/**/*.ts\" && prettier --write \"{src,examples}/**/*.{ts,js}\"",
@@ -20,6 +20,14 @@
     "release:patch": "npm run publish:pre && npm version patch && npm run publish:post",
     "release:minor": "npm run publish:pre && npm version minor && npm run publish:post",
     "release:major": "npm run publish:pre && npm version major && npm run publish:post"
+  },
+  "exports": {
+    ".": {
+      "import": "./lib/index.mjs",
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js",
+      "require": "./lib/index.js"
+    }
   },
   "repository": {
     "type": "git",
@@ -51,6 +59,7 @@
   },
   "homepage": "https://github.com/jeffijoe/libx#readme",
   "devDependencies": {
+    "@rollup/plugin-typescript": "^12.1.0",
     "@types/jest": "^29.5.13",
     "@types/node": "^22.7.4",
     "chai": "^5.1.1",
@@ -63,7 +72,9 @@
     "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
+    "rollup": "^4.24.0",
     "ts-jest": "^29.2.5",
+    "tslib": "^2.7.0",
     "typescript": "^5.6.2",
     "typescript-eslint": "^8.8.0"
   },

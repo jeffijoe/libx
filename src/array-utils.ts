@@ -21,7 +21,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 */
-import { IObservableArray } from 'mobx'
+import type { IObservableArray } from 'mobx'
 
 /**
  * Moves an item from one position to another, checking that the indexes given are within bounds.

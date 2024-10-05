@@ -4,6 +4,7 @@
 
 - 🚨 **Breaking**: remove `collection.reduce`, `collection.orderBy`, and `collection.chunk`
 - Remove dependency on Lodash, the remaining collection functions now use native array methods
+- `libx` now exports both ES Modules and CommonJS
 
 ## 1.0.0.alpha-3
 
