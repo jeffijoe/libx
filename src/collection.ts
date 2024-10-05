@@ -1,20 +1,9 @@
 import { observable, IObservableArray, action } from 'mobx'
-import { referenceOne, referenceMany } from '.'
+import { referenceOne, referenceMany } from './normalization'
 import { moveItem } from './array-utils'
-import {
-  map,
-  filter,
-  find,
-  some,
-  every,
-  reduce,
-  chunk,
-  forEach,
-  orderBy,
-} from 'lodash'
 
 /**
- * Used in various Lodash functions such as `map`, `filter`..
+ * Used in various collection functions such as `map`, `filter`..
  */
 export interface IIteratee<T, M> {
   (input: T, index: number): M
@@ -60,14 +49,14 @@ export interface ICollection<T> {
    */
   set<D>(
     data?: D[],
-    setOpts?: ICollectionOptions<T>
+    setOpts?: ICollectionOptions<T>,
   ): D extends undefined ? undefined : T[]
   /**
    * Adds a single item and maps it using the mapper in the options.
    */
   set<D>(
     data?: D,
-    setOpts?: ICollectionOptions<T>
+    setOpts?: ICollectionOptions<T>,
   ): D extends undefined ? undefined : T
   /**
    * Clears the collection.
@@ -90,24 +79,9 @@ export interface ICollection<T> {
    */
   every(iteratee: IIteratee<T, boolean>): boolean
   /**
-   * Chunks the collection.
-   */
-  chunk(size?: number): Array<Array<T>>
-  /**
-   * Reduces on the items.
-   */
-  reduce<R>(iteratee: IIteratee<T, R>, seed?: R): R
-  /**
    * Finds a particular item.
    */
   find(iteratee: IIteratee<T, boolean>): T | undefined
-  /**
-   * Orders the items based on iteratees and orders.
-   */
-  orderBy(
-    iteratees: Array<IIteratee<T, any> | Object | string>,
-    orders?: Array<boolean | string>
-  ): T[]
   /**
    * Removes an item based on ID or the item itself.
    */
@@ -138,13 +112,13 @@ export interface ICollection<T> {
    * @param {Array<string>} ids
    * @param {keyof T} field
    */
-  referenceOne<K extends keyof T>(id: ModelId): T | null
-  referenceOne<K extends keyof T>(ids: Array<ModelId>): Array<T>
+  referenceOne(id: ModelId): T | null
+  referenceOne(ids: Array<ModelId>): Array<T>
   referenceOne<K extends keyof T>(id: T[K], field?: keyof T): T | null
   referenceOne<K extends keyof T>(ids: Array<T[K]>, field?: keyof T): Array<T>
   referenceOne<K extends keyof T>(
     ids: T[K] | Array<T[K]>,
-    field?: keyof T
+    field?: keyof T,
   ): T | null | Array<T>
   /**
    * Given a single or list of ids and a collection with models,
@@ -157,7 +131,7 @@ export interface ICollection<T> {
    */
   referenceMany<K extends keyof T>(
     ids: T[K] | Array<T[K]>,
-    field: keyof T
+    field: keyof T,
   ): Array<T>
 }
 
@@ -215,11 +189,11 @@ export interface ICollectionOptions<T> {
  * Default collection options.
  */
 export const defaults: ICollectionOptions<any> = {
-  create: (input, opts) => input,
+  create: (input) => input,
   getDataId: (input: any, opts) => input[opts.idAttribute || 'id'],
   getModelId: (existing, opts) => existing[opts.idAttribute || 'id'],
   idAttribute: 'id',
-  update: (existing, input, opts) => Object.assign(existing, input),
+  update: (existing, input) => Object.assign(existing, input),
 }
 
 /**
@@ -247,20 +221,17 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
     create: action(create),
     remove: action(remove),
     clear: action(clear),
-    filter: bindLodashFunc(items, filter),
-    some: bindLodashFunc(items, some),
-    every: bindLodashFunc(items, every),
-    find: bindLodashFunc(items, find),
-    orderBy: bindLodashFunc(items, orderBy),
-    map: bindLodashFunc(items, map),
-    reduce: bindLodashFunc(items, reduce),
-    chunk: bindLodashFunc(items, chunk),
+    filter: (iteratee: IIteratee<T, unknown>) => items.filter(iteratee),
+    some: (iteratee: IIteratee<T, boolean>) => items.some(iteratee),
+    every: (iteratee: IIteratee<T, boolean>) => items.every(iteratee),
+    find: (iteratee: IIteratee<T, unknown>) => items.find(iteratee),
+    map: <M>(iteratee: IIteratee<T, M>) => items.map(iteratee),
     referenceOne: ((ids: any, field: any): any =>
       (referenceOne as any)(self, ids, field)) as any,
     referenceMany: ((ids: any, field: any): any =>
       (referenceMany as any)(self, ids, field)) as any,
     forEach: (iteratee: IIteratee<T, any>) => {
-      forEach(items, iteratee)
+      items.forEach(iteratee)
       return self
     },
     at: (index: number) => items[index],
@@ -274,7 +245,7 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
   function get(id: ModelId[]): Array<T | undefined>
   function get(id: ModelId): T | undefined
   function get(
-    id: ModelId | ModelId[]
+    id: ModelId | ModelId[],
   ): (T | undefined) | Array<T | undefined> {
     /*tslint:disable-next-line*/
     if (id === undefined || id === null) {
@@ -311,7 +282,7 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
   function set(data?: any, setOpts?: ICollectionOptions<T>): T | undefined
   function set(
     data?: any | any[],
-    setOpts?: ICollectionOptions<T>
+    setOpts?: ICollectionOptions<T>,
   ): T | T[] | undefined {
     setOpts = Object.assign({}, opts as any, setOpts)
     if (!data) {
@@ -358,7 +329,7 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
   function create(data: any, createOpts?: ICollectionOptions<T>): T
   function create(
     data: any[] | any,
-    createOpts?: ICollectionOptions<T>
+    createOpts?: ICollectionOptions<T>,
   ): T[] | T {
     if (Array.isArray(data)) {
       return data.map((d) => create(d, createOpts))
@@ -424,11 +395,4 @@ export function collection<T>(opts?: ICollectionOptions<T>): ICollection<T> {
   }
 
   return self
-}
-
-/**
- * Utility for binding lodash functions.
- */
-function bindLodashFunc(items: IObservableArray<any>, func: any): any {
-  return (...args: any[]) => func(items, ...args)
 }

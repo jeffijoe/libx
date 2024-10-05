@@ -1,10 +1,9 @@
 import {
+  type ICollectionOptions,
+  type ICollection,
   collection,
-  ICollection,
-  ICollectionOptions,
-  IObjectHash,
-  Model,
-} from '.'
+} from './collection'
+import { type IObjectHash, Model } from './model'
 
 export interface IModelCollectionOptions<T extends Model>
   extends ICollectionOptions<T> {
@@ -47,13 +46,13 @@ export class Store implements IStore {
    * Creates a collection that gets the root store passed in.
    */
   collection<TModel extends Model>(
-    opts: IModelCollectionOptions<TModel>
+    opts: IModelCollectionOptions<TModel>,
   ): ICollection<TModel> {
     return collection({
       rootStore: this.rootStore,
       create: (
         attributes: IObjectHash,
-        options: IModelCollectionOptions<TModel>
+        options: IModelCollectionOptions<TModel>,
       ) =>
         new opts.model(attributes, {
           stripUndefined: true,
@@ -63,7 +62,7 @@ export class Store implements IStore {
       update: (
         existing: TModel,
         input: IObjectHash,
-        options: IModelCollectionOptions<TModel>
+        options: IModelCollectionOptions<TModel>,
       ) =>
         existing.set(input, {
           stripUndefined: true,

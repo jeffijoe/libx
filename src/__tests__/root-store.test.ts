@@ -27,7 +27,7 @@ describe('createRootStore', () => {
 
   it('lets me customize the factory', () => {
     const factory = jest.fn(
-      (storeClass, rootStore) => new storeClass({ rootStore })
+      (storeClass, rootStore) => new storeClass({ rootStore }),
     )
     const spy1 = jest.fn()
     const rootStore = createRootStore<{
@@ -41,7 +41,7 @@ describe('createRootStore', () => {
         val1: 123,
         func1: spy1,
       },
-      factory
+      factory,
     )
 
     expect(rootStore.store1).toBeInstanceOf(Store1)

@@ -1,4 +1,4 @@
-import { Store } from '.'
+import type { Store } from './store'
 
 export type StoreClass<TRootStore> =
   | (new (props: { rootStore: TRootStore }) => Store)
@@ -7,7 +7,7 @@ export type StoreClass<TRootStore> =
 
 export type StoreFactory<TRootStore> = (
   storeClass: StoreClass<TRootStore>,
-  rootStore: TRootStore
+  rootStore: TRootStore,
 ) => Store
 
 /**
@@ -25,7 +25,7 @@ export interface IStoreMap<TRootStore> {
  */
 export function createRootStore<TRootStore>(
   obj: IStoreMap<TRootStore>,
-  factory?: StoreFactory<TRootStore>
+  factory?: StoreFactory<TRootStore>,
 ): TRootStore {
   const result: any = {}
   factory =

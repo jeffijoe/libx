@@ -21,7 +21,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 */
-import { IObservableArray } from 'mobx'
+import type { IObservableArray } from 'mobx'
 
 /**
  * Moves an item from one position to another, checking that the indexes given are within bounds.
@@ -40,7 +40,7 @@ import { IObservableArray } from 'mobx'
 export function moveItem<T>(
   target: IObservableArray<T>,
   fromIndex: number,
-  toIndex: number
+  toIndex: number,
 ) {
   checkIndex(target, fromIndex)
   checkIndex(target, toIndex)
@@ -83,7 +83,7 @@ function checkIndex(target: IObservableArray<any>, index: number) {
   const length = (target as any).length
   if (index >= length) {
     throw new Error(
-      `[mobx.array] Index out of bounds: ${index} is not smaller than ${length}`
+      `[mobx.array] Index out of bounds: ${index} is not smaller than ${length}`,
     )
   }
 }

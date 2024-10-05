@@ -6,10 +6,10 @@
   "typings": "lib/index.d.ts",
   "engines": {},
   "scripts": {
-    "build": "rimraf lib && tsc -p tsconfig.build.json",
+    "build": "rimraf lib && tsc -p tsconfig.build.json && rollup -c",
     "test": "jest",
     "check": "tsc -p tsconfig.json --noEmit --pretty",
-    "lint": "npm run check && tslint --project tsconfig.json --fix \"src/**/*.ts\" && prettier --write \"{src,examples}/**/*.{ts,js}\"",
+    "lint": "npm run check && eslint --fix \"{src,examples}/**/*.ts\" && prettier --write \"{src,examples}/**/*.{ts,js}\"",
     "lint:watch": "nodemon --exec npm run lint",
     "cover": "npm test -- --coverage",
     "coveralls": "npm run cover && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
@@ -20,6 +20,14 @@
     "release:patch": "npm run publish:pre && npm version patch && npm run publish:post",
     "release:minor": "npm run publish:pre && npm version minor && npm run publish:post",
     "release:major": "npm run publish:pre && npm version major && npm run publish:post"
+  },
+  "exports": {
+    ".": {
+      "import": "./lib/index.mjs",
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js",
+      "require": "./lib/index.js"
+    }
   },
   "repository": {
     "type": "git",
@@ -51,26 +59,24 @@
   },
   "homepage": "https://github.com/jeffijoe/libx#readme",
   "devDependencies": {
-    "@types/jest": "^28.1.1",
-    "@types/lodash": "^4.14.136",
-    "@types/node": "^17.0.44",
-    "@types/prettier": "^2.6.3",
-    "@types/rimraf": "^3.0.2",
-    "chai": "^4.2.0",
+    "@rollup/plugin-typescript": "^12.1.0",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^22.7.4",
+    "chai": "^5.1.1",
     "coveralls": "^3.0.6",
-    "husky": "^8.0.1",
-    "jest": "^28.1.1",
-    "lint-staged": "^13.0.1",
-    "lodash": "^4.17.15",
-    "mobx": "^6.6.0",
-    "nodemon": "^2.0.16",
-    "prettier": "^2.7.0",
-    "rimraf": "^3.0.2",
-    "ts-jest": "^28.0.5",
-    "tslint": "^6.1.3",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-config-standard": "^9.0.0",
-    "typescript": "^4.7.3"
+    "eslint": "^9.12.0",
+    "husky": "^9.1.6",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.2.10",
+    "mobx": "^6.13.3",
+    "nodemon": "^3.1.7",
+    "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.24.0",
+    "ts-jest": "^29.2.5",
+    "tslib": "^2.7.0",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.8.0"
   },
   "lint-staged": {
     "*.ts": [

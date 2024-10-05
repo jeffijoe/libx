@@ -1,5 +1,4 @@
 import { action } from 'mobx'
-import { pick, pickBy } from 'lodash'
 
 /**
  * Any object hash.
@@ -57,7 +56,9 @@ export class Model implements IModel {
     // Just in case we have a root store,
     // set it so we don't need the initialize pattern.
     if (options && (options as any).rootStore) {
-      ;(this as any).rootStore = (options as any).rootStore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this.rootStore = (options as any).rootStore
     }
 
     if (attributes) {
@@ -69,14 +70,25 @@ export class Model implements IModel {
    * Sets the attributes on the model, optionally calling `parse` first.
    */
   set(attributes: IObjectHash, options?: IModelOptions): this {
+    if (!attributes) {
+      return this
+    }
+
     if (options) {
       if (options.parse && this.parse) {
         attributes = this.parse(attributes, options)
       }
 
       if (options.stripUndefined) {
-        // Strip out any undefined keys.
-        attributes = pickBy(attributes, (prop: any) => prop !== undefined)
+        const result: Partial<IObjectHash> = {}
+        for (const key in attributes) {
+          const value = attributes[key]
+          if (value !== undefined) {
+            result[key] = value
+          }
+        }
+
+        attributes = result
       }
     }
 
@@ -87,16 +99,22 @@ export class Model implements IModel {
   /**
    * Used to convert a raw object to something more meaningful.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   parse(attributes: IObjectHash, options?: IModelOptions): IObjectHash {
     return attributes
   }
 
   /**
-   * Picks properties and returns them as an object.
+   * Picks the specified props
+   *
+   * @param properties
+   * @returns
    */
   pick<K extends keyof this>(properties: K[]): Pick<this, K> {
-    // No guarantees that what is returned actually matches
-    // the given TypeScript generic.
-    return pick(this, properties)
+    const result: any = {}
+    for (const prop of properties) {
+      result[prop] = this[prop]
+    }
+    return result
   }
 }

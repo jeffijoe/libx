@@ -1,4 +1,4 @@
-import { ICollection, ModelId } from '.'
+import type { ModelId, ICollection } from './collection'
 
 /**
  * Given a single or list of ids and a collection with models,
@@ -11,28 +11,25 @@ import { ICollection, ModelId } from '.'
  * @param {Array<string>} ids
  * @param {keyof T} field
  */
-export function referenceOne<T, K extends keyof T>(
+export function referenceOne<T>(source: ICollection<T>, id: ModelId): T | null
+export function referenceOne<T>(
   source: ICollection<T>,
-  id: ModelId
-): T | null
-export function referenceOne<T, K extends keyof T>(
-  source: ICollection<T>,
-  ids: Array<ModelId>
+  ids: Array<ModelId>,
 ): Array<T>
 export function referenceOne<T, K extends keyof T>(
   source: ICollection<T>,
   id: T[K],
-  field?: keyof T
+  field?: keyof T,
 ): T | null
 export function referenceOne<T, K extends keyof T>(
   source: ICollection<T>,
   ids: Array<T[K]>,
-  field?: keyof T
+  field?: keyof T,
 ): Array<T>
 export function referenceOne<T, K extends keyof T>(
   source: ICollection<T>,
   ids: T[K] | Array<T[K]>,
-  field?: keyof T
+  field?: keyof T,
 ): T | null | Array<T> {
   if (Array.isArray(ids)) {
     // prettier-ignore
@@ -59,13 +56,13 @@ export function referenceOne<T, K extends keyof T>(
 export function referenceMany<T, K extends keyof T>(
   source: ICollection<T>,
   ids: T[K] | Array<T[K]>,
-  field: keyof T
+  field: keyof T,
 ): Array<T> {
   if (Array.isArray(ids)) {
     const result = ids
       .map((id) => referenceMany(source, id, field))
       .filter(Boolean)
-    return [].concat.apply([], result as any)
+    return result.flat()
   }
 
   return source.filter((x) => x[field] === ids)

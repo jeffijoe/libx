@@ -117,7 +117,7 @@ todoStore
       console.log('Todo creator twitter handle:', todo.creator.twitterHandle)
       console.log(
         'Todo creator todos:',
-        `[${todo.creator.todos.map((x) => `"${x.text}"`).join(', ')}]`
+        `[${todo.creator.todos.map((x) => `"${x.text}"`).join(', ')}]`,
       )
       console.log('-------------')
       console.log('So long, and thanks for all the fish!')
