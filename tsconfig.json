@@ -7,7 +7,7 @@
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
     "noImplicitAny": true,
-    "target": "es5",
+    "target": "ES2020",
     "module": "commonjs",
     "moduleResolution": "node",
     "importHelpers": false,
@@ -15,6 +15,6 @@
     "declaration": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es6", "es7"]
+    "lib": ["ES2020"]
   }
 }

@@ -40,7 +40,7 @@ import { IObservableArray } from 'mobx'
 export function moveItem<T>(
   target: IObservableArray<T>,
   fromIndex: number,
-  toIndex: number
+  toIndex: number,
 ) {
   checkIndex(target, fromIndex)
   checkIndex(target, toIndex)
@@ -83,7 +83,7 @@ function checkIndex(target: IObservableArray<any>, index: number) {
   const length = (target as any).length
   if (index >= length) {
     throw new Error(
-      `[mobx.array] Index out of bounds: ${index} is not smaller than ${length}`
+      `[mobx.array] Index out of bounds: ${index} is not smaller than ${length}`,
     )
   }
 }

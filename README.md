@@ -14,8 +14,8 @@ Collection + Model infrastructure for [MobX](https://github.com/mobxjs/mobx) app
 ## Install
 
 ```bash
-# Depends on MobX and Lodash, it's BYOD (Bring Your Own Dependencies)
-npm install --save libx lodash mobx
+# Depends on MobX, it's BYOD (Bring Your Own Dependencies)
+npm install --save libx mobx
 ```
 
 # Table of Contents
@@ -49,14 +49,12 @@ npm install --save libx lodash mobx
     - [`collection.move(fromIndex, toIndex)`](#collectionmovefromindex-toindex)
     - [`collection.referenceOne(ids, field?)`](#collectionreferenceoneids-field)
     - [`collection.referenceMany(ids, field)`](#collectionreferencemanyids-field)
-    - [LoDash methods](#lodash-methods)
   - [The `Model` class](#the-model-class)
     - [`constructor (attributes, opts)`](#constructor-attributes-opts)
     - [`.rootStore`](#rootstore)
     - [`.set (attributes, opts)`](#set-attributes-opts)
     - [`.parse (attributes, opts)`](#parse-attributes-opts)
-      - [Parent -> Child -> Parent parsing](#parent---child---parent-parsing)
-    - [`.pick (properties)`](#pick-properties)
+      - [Parent -\> Child -\> Parent parsing](#parent---child---parent-parsing)
   - [The `Store` class](#the-store-class)
     - [`store.collection(opts)`](#storecollectionopts)
   - [`createRootStore(obj)`](#createrootstoreobj)
@@ -116,16 +114,16 @@ import Todo from '../models/Todo'
 
 export default class TodoStore extends Store {
   todos = this.collection({
-    model: Todo
+    model: Todo,
   })
 
   @action
   createTodo(text) {
     return http
       .post('/todos', {
-        text: text
+        text: text,
       })
-      .then(data => {
+      .then((data) => {
         this.todos.set(data)
       })
   }
@@ -137,7 +135,7 @@ export default class TodoStore extends Store {
     return (
       http
         .patch('/todos/' + todo.id, {
-          completed: todo.completed
+          completed: todo.completed,
         })
         // this will update the todo model, because it's already
         // in the collection with the same ID.
@@ -182,7 +180,7 @@ export const Todo = (attrs, opts) => {
   return model()
     .extendObservable({
       text: '',
-      completed: false
+      completed: false,
     })
     .set(attrs, opts)
 }
@@ -209,8 +207,8 @@ simplifies writing applications._
 
 Features of the root store:
 
-* References all the other stores
-* Only a single instance per session.
+- References all the other stores
+- Only a single instance per session.
 
 By using the root store pattern instead of singleton stores, you can do server-side rendering
 pretty easily.
@@ -245,7 +243,7 @@ const rootStore = createRootStore({
   todoStore: TodoStore,
   userStore: UserStore,
   // used for UI state
-  todosScreenStore: TodosScreenStore
+  todosScreenStore: TodosScreenStore,
 })
 ```
 
@@ -267,14 +265,14 @@ class TodoStore extends Store {
   todos = this.collection({
     // Whenever we try to add stuff to this collection,
     // transform it to a Todo model.
-    model: Todo
+    model: Todo,
   })
 
   // Fetch todos from our server.
   fetchTodos() {
     return (
       fetch('/api/todos')
-        .then(r => r.json())
+        .then((r) => r.json())
         // `set` is a MobX action, no need to wrap it.
         // Also, it does not care about `this` context.
         .then(this.todos.set)
@@ -285,10 +283,10 @@ class TodoStore extends Store {
     return fetch('/api/todos', {
       method: 'post',
       body: JSON.stringify({
-        text
-      })
+        text,
+      }),
     })
-      .then(r => r.json())
+      .then((r) => r.json())
       .then(this.todos.set) // resolves to a Todo model.
   }
 
@@ -297,10 +295,10 @@ class TodoStore extends Store {
       fetch(`/api/todos/${id}`, {
         method: 'patch',
         body: JSON.stringify({
-          completed
-        })
+          completed,
+        }),
       })
-        .then(r => r.json())
+        .then((r) => r.json())
         // resolves to our existing Todo model, because
         // when `set` is called, it recognizes the `id` and sets
         // the new values on the existing todo. Magical!
@@ -361,7 +359,7 @@ class Todo extends Model {
       // Assign the creator ID so we can look it up.
       creatorId: creator._id,
       // We want all our dates as `Moment`s.
-      createdAt: moment(json.createdAt)
+      createdAt: moment(json.createdAt),
     }
   }
 }
@@ -396,7 +394,7 @@ import { Store } from 'libx'
 class UserStore extends Store {
   users = this.collection({
     model: User,
-    idAttribute: '_id' // easy - to the pub!
+    idAttribute: '_id', // easy - to the pub!
   })
 }
 ```
@@ -445,13 +443,13 @@ class TodosScreenStore extends Store {
     // Stores have access to the root store.
     const { todoStore } = this.rootStore
     const { todos } = todoStore
-    // Fun fact: collections implement a few Lodash functions,
+    // Fun fact: collections implement a few collection functions,
     // like `filter`, `map` and more.
     switch (this.filter) {
       case 'COMPLETED':
-        return todos.filter(x => x.completed)
+        return todos.filter((x) => x.completed)
       case 'INCOMPLETE':
-        return todos.filter(x => !x.completed)
+        return todos.filter((x) => !x.completed)
       default:
         return todos.slice() // coerce to array
     }
@@ -522,11 +520,11 @@ class TodosApp extends React.Component {
           type="text"
           value={this.store.text}
           placeholder="What needs to be done?"
-          onChange={e => this.store.setText(e.target.value)}
+          onChange={(e) => this.store.setText(e.target.value)}
         />
         <button onClick={() => this.store.addTodo()}>Add</button>
         <ul>
-          {this.store.todos.map(todo => (
+          {this.store.todos.map((todo) => (
             <li key={todo.id} onClick={() => this.store.toggle(todo)}>
               <p>
                 {todo.text}
@@ -538,7 +536,7 @@ class TodosApp extends React.Component {
         </ul>
         <select
           value={this.store.filter}
-          onChange={e => this.store.setFilter(e.target.value)}
+          onChange={(e) => this.store.setFilter(e.target.value)}
         >
           <option value="ALL">All</option>
           <option value="COMPLETED">Completed</option>
@@ -552,7 +550,7 @@ class TodosApp extends React.Component {
 render(
   // Get the root store reference from somewhere.
   <TodosApp rootStore={rootStore} />,
-  document.body
+  document.body,
 )
 ```
 
@@ -578,13 +576,13 @@ stand-alone, go right ahead.
 
 **Params:**
 
-* `opts.idAttribute` - defaults to `"id"`, the property used to determine whether to insert or update an item using the default `getModelId` and `getDataId`.
-* `opts.create` - function used to transform the input object to something else. Defaults to a function that just returns the input.
-  * Signature: `(data, opts) => stuffToAddToCollection`, with `opts` being the collection options.
-* `opts.update` - function used to merge input onto an existing object. Defaults to `(existing, input) => Object.assign(existing, input)`
-  * Signature: `(existing, data, opts) => void`, with `opts` being the collection options.
-* `opts.getModelId` - function used to get the ID from an existing object in the collection. Defaults to `(model) => model[idAttribute]`.
-* `opts.getDataId` - function used to get the ID from a raw object wanting to join the collection. Defaults to `(data) => data[idAttribute]`.
+- `opts.idAttribute` - defaults to `"id"`, the property used to determine whether to insert or update an item using the default `getModelId` and `getDataId`.
+- `opts.create` - function used to transform the input object to something else. Defaults to a function that just returns the input.
+  - Signature: `(data, opts) => stuffToAddToCollection`, with `opts` being the collection options.
+- `opts.update` - function used to merge input onto an existing object. Defaults to `(existing, input) => Object.assign(existing, input)`
+  - Signature: `(existing, data, opts) => void`, with `opts` being the collection options.
+- `opts.getModelId` - function used to get the ID from an existing object in the collection. Defaults to `(model) => model[idAttribute]`.
+- `opts.getDataId` - function used to get the ID from a raw object wanting to join the collection. Defaults to `(data) => data[idAttribute]`.
 
 **Example:**
 
@@ -595,10 +593,10 @@ function todo(props) {
     text: '',
     completed: false,
     ...props,
-    set: data => Object.assign(self, data),
+    set: (data) => Object.assign(self, data),
     toggle: () => {
       self.completed = !self.completed
-    }
+    },
   })
 
   return self
@@ -606,7 +604,7 @@ function todo(props) {
 
 const todos = collection({
   create: todo,
-  update: (existing, data) => existing.set(data)
+  update: (existing, data) => existing.set(data),
 })
 
 // Add an item
@@ -614,13 +612,13 @@ const todo1 = todos.set({
   // id = the magic sauce that makes it work
   id: 1,
   text: 'Install LibX',
-  completed: false
+  completed: false,
 })
 
 // Add the same item again, just updates the current one
 const todo1Instance2 = todos.set({
   id: 1,
-  text: 'Install LibX and follow @jeffijoe on Twitter'
+  text: 'Install LibX and follow @jeffijoe on Twitter',
 })
 
 console.log(todo1 === todo1Instance2) // true
@@ -632,16 +630,16 @@ console.log(todo1.completed) // true
 // Add multiple items
 todos.set([
   {
-    id: 1
+    id: 1,
   },
   {
     id: 2,
-    text: 'Build a great app'
+    text: 'Build a great app',
   },
   {
     id: 3,
-    text: 'Profit'
-  }
+    text: 'Profit',
+  },
 ])
 
 console.log(todos.length) // 3, because the first was updated
@@ -683,8 +681,8 @@ Supports 2 variants: `create(obj)` and `create([obj1, obj2])`.
 
 Gets items by ids. Supports 2 variants:
 
-* `collection.get(id)` - returns the found model, or undefined.
-* `collection.get([id1, id2])` - returns an array of found models. If a model isn't found, it is set to `undefined` in the result array (as in `[model1, undefined, model3]`).
+- `collection.get(id)` - returns the found model, or undefined.
+- `collection.get([id1, id2])` - returns an array of found models. If a model isn't found, it is set to `undefined` in the result array (as in `[model1, undefined, model3]`).
 
 Internally uses `getModelId`.
 
@@ -746,26 +744,26 @@ class House {
 }
 
 const houses = collection({
-  model: House
+  model: House,
 })
 
 houses.set([
   {
     id: 'lannister',
     name: 'House Lannister',
-    words: 'A Lannister Always Pays His Debts'
+    words: 'A Lannister Always Pays His Debts',
   },
-  { id: 'stark', name: 'House Stark', words: 'Winter Is Coming' }
+  { id: 'stark', name: 'House Stark', words: 'Winter Is Coming' },
 ])
 
 const members = collection({
-  model: Member
+  model: Member,
 })
 
 members.set([
   { id: 1, name: 'Tyrion Lannister', houseId: 'lannister' },
   { id: 2, name: 'Jamie Lannister', houseId: 'lannister' },
-  { id: 3, name: 'Eddard Stark', houseId: 'stark' }
+  { id: 3, name: 'Eddard Stark', houseId: 'stark' },
 ])
 
 const lannister = houses.get('lannister')
@@ -794,20 +792,6 @@ For "one-to-one" type references, use `referenceOne`.
 
 **Returns:** an array with found items.
 
-### LoDash methods
-
-The following [LoDash][lodash] array methods are available (and TS-typed) on the collection:
-
-* `map`
-* `reduce`
-* `filter`
-* `some`
-* `every`
-* `find`
-* `slice`
-* `chunk`
-* `orderBy`
-
 ## The `Model` class
 
 If you don't mind using ES6 classes, extend from this. It provides some nice things, such as...
@@ -818,11 +802,11 @@ Calls `this.set` with the attributes and options, and also sets the `rootStore` 
 
 **Params:**
 
-* `attributes` - an object that will get assigned onto the model using ´set`.
-* `opts` - model options. These are passed to the initial `set` as well.
-* `opts.parse` - if true, calls `this.parse(attributes, opts)` and assigns the result to the model.
-* `opts.stripUndefined` - if true, strips out any undefined values before assigning to the model.
-* `opts.rootStore` - if set, will be assigned to the model.
+- `attributes` - an object that will get assigned onto the model using ´set`.
+- `opts` - model options. These are passed to the initial `set` as well.
+- `opts.parse` - if true, calls `this.parse(attributes, opts)` and assigns the result to the model.
+- `opts.stripUndefined` - if true, strips out any undefined values before assigning to the model.
+- `opts.rootStore` - if set, will be assigned to the model.
 
 ### `.rootStore`
 
@@ -847,7 +831,7 @@ class Todo extends Model {
   parse(attributes, opts) {
     return {
       ...attributes,
-      completedAt: moment(attributes.completedAt)
+      completedAt: moment(attributes.completedAt),
     }
   }
 }
@@ -857,11 +841,11 @@ const todo = new Todo({ text: 'Install LibX' })
 todo.set(
   {
     completed: true,
-    completedAt: '2017-02-29T12:00:00Z'
+    completedAt: '2017-02-29T12:00:00Z',
   },
   {
-    parse: true
-  }
+    parse: true,
+  },
 )
 ```
 
@@ -869,16 +853,16 @@ todo.set(
 
 ```js
 const todo = new Todo({
-  text: 'Install LibX'
+  text: 'Install LibX',
 })
 
 todo.set(
   {
-    text: undefined
+    text: undefined,
   },
   {
-    stripUndefined: true
-  }
+    stripUndefined: true,
+  },
 )
 
 console.log(todo.text) // "Install LibX"
@@ -890,8 +874,8 @@ Called by `set` when `parse: true` is passed to it. Gives the model a chance to 
 
 The `parse` function is responsible for 2 things:
 
-* Update any other data stores in case of embedded data
-* Return props to be merged onto the new/existing in-memory model instance.
+- Update any other data stores in case of embedded data
+- Return props to be merged onto the new/existing in-memory model instance.
 
 **Example:** normalization
 
@@ -904,7 +888,7 @@ class Todo extends Model {
     const creator = this.rootStore.userStore.users.set(attributes.creator)
     return {
       ...attributes,
-      creator
+      creator,
     }
   }
 }
@@ -914,12 +898,12 @@ const todo = new Todo(
     text: 'Install MobX',
     creator: {
       id: 1,
-      name: 'Jeff Hansen'
-    }
+      name: 'Jeff Hansen',
+    },
   },
   {
-    parse: true
-  }
+    parse: true,
+  },
 )
 ```
 
@@ -950,7 +934,7 @@ class Post extends Model {
   parse({ category, ...json }) {
     return {
       ...json,
-      category: this.rootStore.categoryStore.categories.set(category)
+      category: this.rootStore.categoryStore.categories.set(category),
     }
   }
 }
@@ -959,7 +943,7 @@ class Category extends Model {
   parse({ latestPost, ...json }) {
     return {
       ...json,
-      latestPost: this.rootStore.postStore.posts.set(latestPost)
+      latestPost: this.rootStore.postStore.posts.set(latestPost),
     }
   }
 }
@@ -967,30 +951,26 @@ class Category extends Model {
 
 In LibX 0.1.x, this would wrongfully result in 2 `Post` instances, because:
 
-* Check if we have a post with id `post123`
-  * We don't, parse the data into a new `Post` instance
-    * Check if we have a category with id `category123`
-      * We don't, parse the data into a new `Category` instance
-        * Check if we have a post with id `post123`
-          * We don't, parse the data into a new `Post` instance
-          * Add the created `Post` to the collection
-      * Add the created `Category` to the collection
-  * Add the created `Post` to the collection
+- Check if we have a post with id `post123`
+  - We don't, parse the data into a new `Post` instance
+    - Check if we have a category with id `category123`
+      - We don't, parse the data into a new `Category` instance
+        - Check if we have a post with id `post123`
+          - We don't, parse the data into a new `Post` instance
+          - Add the created `Post` to the collection
+      - Add the created `Category` to the collection
+  - Add the created `Post` to the collection
 
 As of version 0.2.0, parsing a 3+ level deep parent->child->parent structure no longer results in duplicate models.
 This works by checking the collection _after parsing_ to see if a model with the same ID was added to the collection.
 If it was, parse the data _again_ but while _updating the existing model_.
 
-### `.pick (properties)`
-
-Picks the properties on the model. Basically LoDash's `_.pick(this, properties)`
-
 ## The `Store` class
 
 If you don't mind using ES6 classes, you'll get a lot by using the `Store` as a base class for your stores:
 
-* it sets a reference to the `rootStore`
-* it has a nice `collection()` function.
+- it sets a reference to the `rootStore`
+- it has a nice `collection()` function.
 
 ### `store.collection(opts)`
 
@@ -999,10 +979,10 @@ a [`Model`](#the-model-class). It also passes in the store's `rootStore` referen
 
 **Params:**
 
-* `opts` - options passed to `collection(opts)`
-* `opts.model` - class to instantiate for new models
-* `opts.stripUndefined` - default is now `true`
-* `opts.parse` - default is now `true`
+- `opts` - options passed to `collection(opts)`
+- `opts.model` - class to instantiate for new models
+- `opts.stripUndefined` - default is now `true`
+- `opts.parse` - default is now `true`
 
 **Returns:** a collection.
 
@@ -1013,7 +993,7 @@ class TodoStore extends Store {
   // ES7 property initializer
   todos = this.collection({
     model: Todo,
-    stripUndefined: false
+    stripUndefined: false,
   })
 }
 
@@ -1031,7 +1011,7 @@ Easiest way to create a simple root store. A root store, as described earlier, i
 
 **Params:**
 
-* `obj` - example: `{ userStore: UserStore }`
+- `obj` - example: `{ userStore: UserStore }`
 
 **Returns:** the root store object.
 
@@ -1052,14 +1032,14 @@ console.log(rootStore.userStore instanceof UserStore) // true
 
 # Projects using LibX
 
-* [Posish](https://posish.now.sh) ([GitHub repo](https://github.com/jeffijoe/posish)) — a tool to generate code based on string positions
+- [Posish](https://posish.now.sh) ([GitHub repo](https://github.com/jeffijoe/posish)) — a tool to generate code based on string positions
 
 Are you using LibX in your project and want it listed here? Submit a PR! :rocket:
 
 # See Also
 
-* [validx][validx] - MobX validation library
-* [mobx-task][mobx-task] - Async operation state management
+- [validx][validx] - MobX validation library
+- [mobx-task][mobx-task] - Async operation state management
 
 # Author
 
@@ -1067,6 +1047,5 @@ Jeff Hansen - [@Jeffijoe](https://twitter.com/Jeffijoe)
 
 [ts-example]: /examples/typescript
 [babel-example]: /examples/babel
-[lodash]: https://lodash.com
 [validx]: https://github.com/jeffijoe/validx
 [mobx-task]: https://github.com/jeffijoe/mobx-task

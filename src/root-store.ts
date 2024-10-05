@@ -7,7 +7,7 @@ export type StoreClass<TRootStore> =
 
 export type StoreFactory<TRootStore> = (
   storeClass: StoreClass<TRootStore>,
-  rootStore: TRootStore
+  rootStore: TRootStore,
 ) => Store
 
 /**
@@ -25,7 +25,7 @@ export interface IStoreMap<TRootStore> {
  */
 export function createRootStore<TRootStore>(
   obj: IStoreMap<TRootStore>,
-  factory?: StoreFactory<TRootStore>
+  factory?: StoreFactory<TRootStore>,
 ): TRootStore {
   const result: any = {}
   factory =

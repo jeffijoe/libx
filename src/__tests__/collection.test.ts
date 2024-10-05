@@ -2,7 +2,7 @@ import { collection, Model, ICollection } from '..'
 
 describe('collection', () => {
   it('can be created', () => {
-    const c = collection<{}>()
+    const c = collection<object>()
     expect(c).toBeDefined()
     expect(c.items).toBeDefined()
   })
@@ -254,7 +254,7 @@ describe('collection', () => {
     })
   })
 
-  describe('lodash functions', () => {
+  describe('collection functions', () => {
     type Value = { id: number; name: string; gender: 'male' | 'female' }
     let c: ICollection<Value>
     beforeEach(() => {
@@ -290,6 +290,16 @@ describe('collection', () => {
       expect(male[1].id).toBe(3)
     })
 
+    it('#some', () => {
+      const hasMale = c.some((x) => x.gender === 'male')
+      expect(hasMale).toBe(true)
+    })
+
+    it('#every', () => {
+      const allMale = c.every((x) => x.gender === 'male')
+      expect(allMale).toBe(false)
+    })
+
     it('#find', () => {
       const jeff = c.find((x) => x.name === 'Jeff')
       expect(jeff).toBeDefined()
@@ -298,18 +308,6 @@ describe('collection', () => {
 
     it('#slice', () => {
       expect(c.slice(0, 1).length).toBe(1)
-    })
-
-    it('#orderBy', () => {
-      let ordered = c.orderBy(['name'], ['asc'])
-      expect(ordered[0].name).toBe('Amanda')
-      expect(ordered[1].name).toBe('Jeff')
-      expect(ordered[2].name).toBe('Will')
-
-      ordered = c.orderBy(['name'], ['desc'])
-      expect(ordered[0].name).toBe('Will')
-      expect(ordered[1].name).toBe('Jeff')
-      expect(ordered[2].name).toBe('Amanda')
     })
 
     it('#forEach', () => {

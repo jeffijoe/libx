@@ -1,6 +1,8 @@
 import { Model } from '..'
 import { observable } from 'mobx'
 
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 describe('Model', () => {
   describe('constructor', () => {
     it('sets properties', () => {
@@ -27,6 +29,21 @@ describe('Model', () => {
   })
 
   describe('#set', () => {
+    it('checks for falsy', () => {
+      class M extends Model {
+        @observable hello: string
+
+        parse() {
+          return { hello: 'sucker' }
+        }
+      }
+
+      const m = new M()
+
+      // @ts-expect-error
+      expect(m.set(null, { parse: true })).toBe(m)
+    })
+
     it('calls #parse when options.parse = true', () => {
       class M extends Model {
         @observable hello: string
